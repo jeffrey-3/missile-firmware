@@ -8,6 +8,7 @@ SOURCES = src/main.c \
           src/startup.c \
           src/syscalls.c \
           src/hal/hal.c \
+          src/hal/gpio.c \
           src/board.c \
           src/peripherals/icm45686.c \
           src/peripherals/w25q128jv.c \
