@@ -11,7 +11,7 @@ typedef enum : uint8_t {
 } gpio_mode_t;
 
 typedef struct {
-    char bank;
+    gpio_registers bank;
     uint8_t number;
     uint8_t af;
 } gpio_t;

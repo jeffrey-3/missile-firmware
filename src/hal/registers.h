@@ -23,7 +23,12 @@ struct gpio_registers {
     volatile uint32_t MODER, OTYPER, OSPEEDR, PUPDR, IDR, ODR, BSRR, LCKR,
         AFR[2], BRR;
 };
-#define GPIO(bank) ((struct gpio_registers *) (0x50000000 + 0x400 * (bank)))
+#define GPIOA ((struct gpio_registers *) 0x50000000)
+#define GPIOB ((struct gpio_registers *) 0x50000400)
+#define GPIOC ((struct gpio_registers *) 0x50000800)
+#define GPIOD ((struct gpio_registers *) 0x50000C00)
+#define GPIOE ((struct gpio_registers *) 0x50001000)
+#define GPIOF ((struct gpio_registers *) 0x50001400)
 
 struct uart_registers {
     volatile uint32_t CR1, CR2, CR3, BRR, GTPR, RTOR, RQR, ISR, ICR, RDR, TDR,
