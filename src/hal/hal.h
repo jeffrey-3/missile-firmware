@@ -26,7 +26,7 @@ struct rcc {
 struct systick {
     volatile uint32_t CTRL, LOAD, VAL, CALIB;
 };
-#define SYSTICK ((struct systick *) 0xe000e010)
+#define SYSTICK ((struct systick *) 0xE000E010)
 
 void systick_init();
 void delay(uint32_t duration);
@@ -38,13 +38,18 @@ struct gpio {
     volatile uint32_t MODER, OTYPER, OSPEEDR, PUPDR, IDR, ODR, BSRR, LCKR,
         AFR[2], BRR;
 };
-#define GPIO(bank) ((struct gpio *) (0x50000000 + 0x400 * (bank)))
+#define GPIOA ((struct gpio *) 0x50000000)
+#define GPIOB ((struct gpio *) 0x50000400)
+#define GPIOC ((struct gpio *) 0x50000800)
+#define GPIOD ((struct gpio *) 0x50000C00)
+#define GPIOE ((struct gpio *) 0x50001000)
+#define GPIOF ((struct gpio *) 0x50001400)
 
 enum { GPIO_MODE_INPUT, GPIO_MODE_OUTPUT, GPIO_MODE_AF, GPIO_MODE_ANALOG };
 
-void gpio_set_mode(uint16_t pin, uint8_t mode);
-void gpio_write(uint16_t pin, bool val);
-void gpio_set_af(uint16_t pin, uint8_t af_num);
+void gpio_set_mode(struct gpio* gpio, uint8_t pin_number, uint8_t mode);
+void gpio_write(struct gpio* gpio, uint8_t pin_number, bool val);
+void gpio_set_af(struct gpio* gpio, uint8_t pin_number, uint8_t af_num);
 
 struct uart {
     volatile uint32_t CR1, CR2, CR3, BRR, GTPR, RTOR, RQR, ISR, ICR, RDR, TDR,
