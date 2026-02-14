@@ -74,15 +74,13 @@ void vehicle_logger_init(vehicle_t *vehicle) {
 }
 
 void vehicle_update_flight(vehicle_t *vehicle) {
-    float accel[3];
-    float gyro[3];
-
     if (timer_expired(&vehicle->led_timer, 500)) {
         gpio_write(board_pins.led, vehicle->led_on);
         vehicle->led_on = !vehicle->led_on;
     }
 
     if (timer_expired(&vehicle->ins_timer, 10)) {
+        float accel[3], gyro[3];
         icm45686_read_accel(&vehicle->imu, accel);
         icm45686_read_gyro(&vehicle->imu, gyro);
 
