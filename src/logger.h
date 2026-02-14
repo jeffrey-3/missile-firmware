@@ -18,13 +18,14 @@ typedef struct __attribute__((packed)) {
     float az;
 } message_t;
 
-typedef void (*logger_write_page_t)(uint32_t page, uint8_t *data);
-typedef void (*logger_erase_sector_t)(uint16_t sector);
-typedef void (*logger_write_enable_t)(void);
-typedef void (*logger_write_disable_t)(void);
-typedef void (*logger_read_page_t)(uint32_t page, uint8_t *data);
+typedef void (*logger_write_page_t)(void *context, uint32_t page,
+    uint8_t *data);
+typedef void (*logger_erase_sector_t)(void *context, uint16_t sector);
+typedef void (*logger_write_enable_t)(void *context);
+typedef void (*logger_write_disable_t)(void *context);
+typedef void (*logger_read_page_t)(void *context, uint32_t page, uint8_t *data);
 typedef void (*logger_delay_ms_t)(uint32_t ms);
-typedef void (*logger_output_callback_t)(char *str, size_t len);
+typedef void (*logger_output_callback_t)(void *context, char *str, size_t len);
 
 typedef struct {
     logger_write_page_t write_page;
@@ -36,6 +37,7 @@ typedef struct {
     logger_output_callback_t output_callback;
     uint32_t current_page;
     ring_buffer_t ring_buffer;
+    void *context;
 } logger_t;
 
 void logger_init(logger_t *logger);

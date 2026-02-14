@@ -7,7 +7,7 @@ void logger_init(logger_t *logger) {
 
     ring_buffer_setup(&logger->ring_buffer, data_buffer, LOGGER_RING_BUF_SIZE);
 
-    logger->write_enable();
+    logger->write_enable(logger->context);
     logger->delay_ms(LOGGER_WRITE_EN_TIME);
 }
 
@@ -37,11 +37,11 @@ void logger_write(logger_t *logger, message_t message) {
         }
 
         // Write the data
-        logger->write_page(logger->current_page, write_buf);
+        logger->write_page(logger->context, logger->current_page, write_buf);
         logger->current_page++;
     } else {
         // After every write, the flash chip disables write, so must re-enable
-        logger->write_enable();
+        logger->write_enable(logger->context);
     }
 }
 
@@ -50,13 +50,13 @@ void logger_write(logger_t *logger, message_t message) {
  */
 void logger_erase(logger_t *logger, uint16_t sector) {
     // After every erase, the flash chip disables write, so must re-enable
-    logger->write_enable();
+    logger->write_enable(logger->context);
     logger->delay_ms(LOGGER_WRITE_EN_TIME);
 
-    logger->erase_sector(sector);
+    logger->erase_sector(logger->context, sector);
     logger->delay_ms(LOGGER_SECTOR_ERASE_TIME);
 
-    logger->write_enable();
+    logger->write_enable(logger->context);
     logger->delay_ms(LOGGER_WRITE_EN_TIME);
 }
 
@@ -66,18 +66,18 @@ void logger_erase(logger_t *logger, uint16_t sector) {
  * This function is very slow but temporary and not used in main loop anyways
  */
 void logger_read(logger_t *logger, uint32_t page, message_t *messages) {
-    logger->write_disable();
+    logger->write_disable(logger->context);
     logger->delay_ms(LOGGER_WRITE_EN_TIME);
 
     uint32_t size = LOGGER_MSG_PER_PAGE * sizeof(message_t);
     uint8_t data[size];
-    logger->read_page(page, data);
+    logger->read_page(logger->context, page, data);
 
     for (uint32_t i = 0; i < LOGGER_MSG_PER_PAGE; i++) {
         memcpy(&messages[i], &data[i * sizeof(message_t)], sizeof(message_t));
     }
 
-    logger->write_enable();
+    logger->write_enable(logger->context);
     logger->delay_ms(LOGGER_WRITE_EN_TIME);
 }
 
@@ -86,7 +86,7 @@ void logger_read_output(logger_t *logger) {
         char buf[100];
         snprintf(buf, sizeof(buf), "Reading page %ld out of %d\r\n", i + 1,
             LOGGER_NUM_PAGES);
-        logger->output_callback(buf, strlen(buf));
+        logger->output_callback(logger->context, buf, strlen(buf));
 
         message_t messages[LOGGER_MSG_PER_PAGE];
         logger_read(logger, i, messages);
@@ -100,11 +100,13 @@ void logger_read_output(logger_t *logger) {
                 message.counter, message.time, (double)message.gx,
                 (double)message.gy, (double)message.gz, (double)message.ax,
                 (double)message.ay, (double)message.az);
-            logger->output_callback(uart_buf, strlen(uart_buf));
+            logger->output_callback(logger->context, uart_buf,
+                strlen(uart_buf));
         }
     }
 
-    logger->output_callback("Finished\r\n", strlen("Finished\r\n"));
+    logger->output_callback(logger->context, "Finished\r\n",
+        strlen("Finished\r\n"));
 }
 
 void logger_erase_output(logger_t *logger) {
@@ -114,9 +116,9 @@ void logger_erase_output(logger_t *logger) {
         char uart_buf[100];
         snprintf(uart_buf, sizeof(uart_buf), "Erased %d out of %d\r\n",
             i + 1, LOGGER_NUM_SECTORS);
-        logger->output_callback(uart_buf, strlen(uart_buf));
+        logger->output_callback(logger->context, uart_buf, strlen(uart_buf));
     }
 
     char uart_buf[100] = "Finished erase. Power cycle now.\r\n";
-    logger->output_callback(uart_buf, strlen(uart_buf));
+    logger->output_callback(logger->context, uart_buf, strlen(uart_buf));
 }
