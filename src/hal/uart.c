@@ -1,8 +1,8 @@
 #include "uart.h"
 
 void uart_init(uart_t *uart) {
-    gpio_init(uart->tx);
-    gpio_init(uart->rx);
+    gpio_init(&uart->tx);
+    gpio_init(&uart->rx);
 
     if (uart->uart_reg == UART1) {
         RCC->APBENR2 |= BIT(14);
@@ -26,7 +26,7 @@ void uart_write_buf(uart_t *uart, char *buf, size_t len) {
     }
 }
 
-int uart_read_ready(uart_ *uart) {
+int uart_read_ready(uart_t *uart) {
     return uart->uart_reg->ISR & BIT(5); // If RXNE bit is set, data is ready
 }
 

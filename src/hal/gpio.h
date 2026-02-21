@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "registers.h"
 
 enum {
     GPIO_MODE_INPUT,
