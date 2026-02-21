@@ -1,11 +1,6 @@
 #ifndef REGISTERS_H
 #define REGISTERS_H
 
-#include <inttypes.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <stdio.h>
-
 struct rcc_reg {
     volatile uint32_t CR;
     volatile uint32_t ICSCR;
