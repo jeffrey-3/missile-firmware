@@ -1,35 +1,35 @@
 #include "vehicle.h"
 
-static void vehicle_logger_write_page(void *context, uint32_t page,
+static void logger_write_page(void *context, uint32_t page,
     uint8_t *data) {
     w25q128jv_t *flash = (w25q128jv_t *)context;
     w25q128jv_write_page(flash, page, 0,
         LOGGER_MSG_PER_PAGE * sizeof(message_t), data);
 }
 
-static void vehicle_logger_erase_sector(void *context, uint16_t sector) {
+static void logger_erase_sector(void *context, uint16_t sector) {
     w25q128jv_t *flash = (w25q128jv_t *)context;
     w25q128jv_erase_sector(flash, sector);
 }
 
-static void vehicle_logger_write_enable(void *context) {
+static void logger_write_enable(void *context) {
     w25q128jv_t *flash = (w25q128jv_t *)context;
     w25q128jv_write_enable(flash);
 }
 
-static void vehicle_logger_write_disable(void *context) {
+static void logger_write_disable(void *context) {
     w25q128jv_t *flash = (w25q128jv_t *)context;
     w25q128jv_write_disable(flash);
 }
 
-static void vehicle_logger_read_page(void *context, uint32_t page,
+static void logger_read_page(void *context, uint32_t page,
     uint8_t *data) {
     w25q128jv_t *flash = (w25q128jv_t *)context;
     w25q128jv_read(flash, page, 0, LOGGER_MSG_PER_PAGE * sizeof(message_t),
         data);
 }
 
-static void vehicle_logger_output_callback(void *context, char *str,
+static void logger_output_callback(void *context, char *str,
     size_t len) {
     (void)context;
     uart_write_buf(UART1, str, len);
@@ -63,13 +63,13 @@ void vehicle_ins_init(vehicle_t *vehicle) {
 
 void vehicle_logger_init(vehicle_t *vehicle) {
     vehicle->logger.context = &vehicle->flash;
-    vehicle->logger.write_page = vehicle_logger_write_page;
-    vehicle->logger.erase_sector = vehicle_logger_erase_sector;
-    vehicle->logger.write_enable = vehicle_logger_write_enable;
-    vehicle->logger.write_disable = vehicle_logger_write_disable;
-    vehicle->logger.read_page = vehicle_logger_read_page;
+    vehicle->logger.write_page = logger_write_page;
+    vehicle->logger.erase_sector = logger_erase_sector;
+    vehicle->logger.write_enable = logger_write_enable;
+    vehicle->logger.write_disable = logger_write_disable;
+    vehicle->logger.read_page = logger_read_page;
     vehicle->logger.delay_ms = delay;
-    vehicle->logger.output_callback = vehicle_logger_output_callback;
+    vehicle->logger.output_callback = logger_output_callback;
     logger_init(&vehicle->logger);
 }
 
