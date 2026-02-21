@@ -2,6 +2,7 @@
 #define BOARD_H
 
 #include "hal/gpio.h"
+#include "hal/registers.h"
 
 typedef struct {
     gpio_t led;
@@ -17,6 +18,6 @@ typedef struct {
     gpio_t spi2_sck;
 } board_pins_t;
 
-extern const board_pins_t board_pins;
+extern board_pins_t board_pins;
 
 #endif // BOARD_H

@@ -1,6 +1,6 @@
 #include "vehicle.h"
 
-static spi_t icm45686_spi = {
+spi_t icm45686_spi = {
     .spi_reg = SPI1,
     .cs = board_pins.spi1_cs,
     .miso = board_pins.spi1_miso,
@@ -8,7 +8,7 @@ static spi_t icm45686_spi = {
     .sck = board_pins.spi1_sck
 }
 
-static spi_t w25q128jv_spi = {
+spi_t w25q128jv_spi = {
     .spi_reg = SPI2,
     .cs = board_pins.spi2_cs,
     .miso = board_pins.spi2_miso,
@@ -16,7 +16,7 @@ static spi_t w25q128jv_spi = {
     .sck = board_pins.spi2_sck
 }
 
-static uart_t debug_uart = {
+uart_t debug_uart = {
     .uart_reg = UART1,
     .tx = board_pins.uart1_tx,
     .rx = board_pins.uart1_rx,
@@ -55,7 +55,7 @@ static void logger_read_page(void *context, uint32_t page,
 static void logger_output_callback(void *context, char *str,
     size_t len) {
     (void)context;
-    uart_write_buf(UART1, str, len);
+    uart_write_buf(&debug_uart, str, len);
 }
 
 static void icm45686_spi_transfer(const uint8_t *tx_buf, uint8_t *rx_buf,
@@ -157,7 +157,7 @@ boot_mode_t vehicle_run_cli() {
     uint32_t start_time = get_time();
 
     for (;;) {
-        while (!uart_read_ready(UART1)) {
+        while (!uart_read_ready(&debug_uart)) {
             // Default to flight mode after 10 seconds
             if (get_time() - start_time > 10000) {
                 return BOOT_MODE_FLIGHT;
@@ -167,7 +167,7 @@ boot_mode_t vehicle_run_cli() {
                 char uart_buf[100] = "Missile CLI\r\n"
                     "(1) Flight\r\n(2) Calibrate\r\n(3) Fin Test\r\n"
                     "(4) HITL\r\n(5) Retrieve\r\n(9) Erase\r\n";
-                uart_write_buf(UART1, uart_buf, strlen(uart_buf));
+                uart_write_buf(&debug_uart, uart_buf, strlen(uart_buf));
             }
         }
 
@@ -178,19 +178,19 @@ boot_mode_t vehicle_run_cli() {
             idx = 0;
 
             if (strcmp(cmd_buf, "1") == 0) {
-                uart_write_buf(UART1, "Flight Selected\r\n", 17);
+                uart_write_buf(&debug_uart, "Flight Selected\r\n", 17);
                 return BOOT_MODE_FLIGHT;
             } else if (strcmp(cmd_buf, "2") == 0) {
-                uart_write_buf(UART1, "Calibrate Selected\r\n", 20);
+                uart_write_buf(&debug_uart, "Calibrate Selected\r\n", 20);
                 return BOOT_MODE_CALIBRATE;
             } else if (strcmp(cmd_buf, "5") == 0) {
-                uart_write_buf(UART1, "Retrieve Selected\r\n", 19);
+                uart_write_buf(&debug_uart, "Retrieve Selected\r\n", 19);
                 return BOOT_MODE_RETREIVE;
             } else if (strcmp(cmd_buf, "9") == 0) {
-                uart_write_buf(UART1, "Erase Selected\r\n", 16);
+                uart_write_buf(&debug_uart, "Erase Selected\r\n", 16);
                 return BOOT_MODE_ERASE;
             } else {
-                uart_write_buf(UART1, "Invalid\r\n", 9);
+                uart_write_buf(&debug_uart, "Invalid\r\n", 9);
             }
 
             continue;

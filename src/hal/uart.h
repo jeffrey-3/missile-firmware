@@ -1,6 +1,7 @@
 #ifndef UART_H
 #define UART_H
 
+#include <stddef.h>
 #include "registers.h"
 #include "gpio.h"
 

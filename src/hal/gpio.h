@@ -1,6 +1,9 @@
 #ifndef GPIO_H
 #define GPIO_H
 
+#include <stdint.h>
+#include <stdbool.h>
+
 enum {
     GPIO_MODE_INPUT,
     GPIO_MODE_OUTPUT,

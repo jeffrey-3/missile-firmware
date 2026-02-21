@@ -1,13 +1,17 @@
 #ifndef VEHICLE_H
 #define VEHICLE_H
 
-#include "board.h"
-#include "math/math.h"
 #include "peripherals/icm45686.h"
 #include "peripherals/w25q128jv.h"
+#include "math/math.h"
 #include "math/quaternion.h"
+#include "hal/clock.h"
+#include "hal/gpio.h"
+#include "hal/uart.h"
+#include "hal/spi.h"
 #include "ins.h"
 #include "logger.h"
+#include "board.h"
 
 typedef enum {
     BOOT_MODE_FLIGHT,

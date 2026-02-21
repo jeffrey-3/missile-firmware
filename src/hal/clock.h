@@ -1,6 +1,10 @@
 #ifndef CLOCK_H
 #define CLOCK_H
 
+#include <stdint.h>
+#include <stdbool.h>
+#include "registers.h"
+
 #define FREQ 16000000 // 16 MHz
 
 void _systick_handler(void);
