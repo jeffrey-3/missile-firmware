@@ -5,7 +5,7 @@ int main(void) {
     boot_mode_t boot_mode;
 
     vehicle_init(&vehicle);
-    boot_mode = vehicle_run_cli();
+    boot_mode = vehicle_run_cli(&vehicle);
 
     for (;;) {
         switch (boot_mode) {

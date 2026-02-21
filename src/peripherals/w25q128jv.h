@@ -11,12 +11,13 @@
 #define W25Q128JV_WRITE_DISABLE 0x04
 #define W25Q128JV_PAGE_PROGRAM 0x02
 
-typedef void (*w25q128jv_spi_transfer_t)(const uint8_t *tx_buf, uint8_t *rx_buf,
-    size_t len);
+typedef void (*w25q128jv_spi_transfer_t)(void *context, const uint8_t *tx_buf,
+    uint8_t *rx_buf, size_t len);
 typedef void (*w25q128jv_delay_ms_t)(uint32_t ms);
 
 typedef struct {
     w25q128jv_spi_transfer_t spi_transfer;
+    void *context;
 } w25q128jv_t;
 
 uint8_t w25q128jv_read_id(w25q128jv_t *device);

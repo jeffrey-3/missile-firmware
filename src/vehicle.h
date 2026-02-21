@@ -25,6 +25,9 @@ typedef struct {
     logger_t logger;
     icm45686_t imu;
     w25q128jv_t flash;
+    spi_t icm45686_spi;
+    spi_t w25q128jv_spi;
+    uart_t debug_uart;
     bool led_on;
     uint32_t led_timer;
     uint32_t ins_timer;
@@ -40,7 +43,7 @@ void vehicle_update_calibrate(vehicle_t *vehicle);
 void vehicle_update_retreive(vehicle_t *vehicle);
 void vehicle_update_erase(vehicle_t *vehicle);
 
-boot_mode_t vehicle_run_cli();
+boot_mode_t vehicle_run_cli(vehicle_t *vehicle);
 void vehicle_print_state(vehicle_t *vehicle);
 
 #endif // VEHICLE_H
