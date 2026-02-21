@@ -9,7 +9,7 @@ void systick_init() {
     RCC->APBENR2 |= BIT(0); // Enable SYSCFG
 }
 
-void systick_handler(void) {
+void _systick_handler(void) {
     current_time++;
 }
 

@@ -8,7 +8,7 @@
 #define FREQ 16000000 // 16 MHz
 
 void systick_init();
-void systick_handler(void);
+void _systick_handler(void);
 void delay(uint32_t duration);
 uint32_t get_time();
 bool timer_expired(uint32_t *expiration, uint32_t period);
