@@ -1,13 +1,17 @@
 #ifndef VEHICLE_H
 #define VEHICLE_H
 
-#include "board.h"
-#include "math/math.h"
 #include "peripherals/icm45686.h"
 #include "peripherals/w25q128jv.h"
+#include "math/math.h"
 #include "math/quaternion.h"
+#include "hal/clock.h"
+#include "hal/gpio.h"
+#include "hal/uart.h"
+#include "hal/spi.h"
 #include "ins.h"
 #include "logger.h"
+#include "board.h"
 
 typedef enum {
     BOOT_MODE_FLIGHT,
@@ -21,6 +25,9 @@ typedef struct {
     logger_t logger;
     icm45686_t imu;
     w25q128jv_t flash;
+    spi_t icm45686_spi;
+    spi_t w25q128jv_spi;
+    uart_t debug_uart;
     bool led_on;
     uint32_t led_timer;
     uint32_t ins_timer;
@@ -30,18 +37,13 @@ typedef struct {
 } vehicle_t;
 
 void vehicle_init(vehicle_t *vehicle);
-void vehicle_imu_init(vehicle_t *vehicle);
-void vehicle_flash_init(vehicle_t *vehicle);
-void vehicle_ins_init(vehicle_t *vehicle);
-void vehicle_logger_init(vehicle_t *vehicle);
 
-void vehicle_update(vehicle_t *vehicle);
 void vehicle_update_flight(vehicle_t *vehicle);
 void vehicle_update_calibrate(vehicle_t *vehicle);
 void vehicle_update_retreive(vehicle_t *vehicle);
 void vehicle_update_erase(vehicle_t *vehicle);
 
-boot_mode_t vehicle_run_cli();
+boot_mode_t vehicle_run_cli(vehicle_t *vehicle);
 void vehicle_print_state(vehicle_t *vehicle);
 
 #endif // VEHICLE_H

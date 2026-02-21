@@ -3,7 +3,7 @@
 uint8_t w25q128jv_read_id(w25q128jv_t *device) {
     uint8_t tx_buf[6] = {W25Q128JV_DEVICE_ID, 0x00, 0x00, 0x00, 0x00, 0x00};
     uint8_t rx_buf[6];
-    device->spi_transfer(tx_buf, rx_buf, 6);
+    device->spi_transfer(device->context, tx_buf, rx_buf, 6);
     return rx_buf[4];
 }
 
@@ -32,7 +32,7 @@ void w25q128jv_read(w25q128jv_t *device, uint32_t start_page, uint8_t offset,
     tx_buf[2] = (mem_addr >> 8) & 0xFF;
     tx_buf[3] = mem_addr & 0xFF;
 
-    device->spi_transfer(tx_buf, rx_buf, size + 4);
+    device->spi_transfer(device->context, tx_buf, rx_buf, size + 4);
 
     for (uint32_t i = 0; i < size; i++) {
         data[i] = rx_buf[i + 4];
@@ -48,7 +48,7 @@ void w25q128jv_read(w25q128jv_t *device, uint32_t start_page, uint8_t offset,
 void w25q128jv_write_enable(w25q128jv_t *device) {
     uint8_t tx_buf[1] = {W25Q128JV_WRITE_ENABLE};
     uint8_t rx_buf[1];
-    device->spi_transfer(tx_buf, rx_buf, 1);
+    device->spi_transfer(device->context, tx_buf, rx_buf, 1);
 }
 
 /*
@@ -60,7 +60,7 @@ void w25q128jv_write_enable(w25q128jv_t *device) {
 void w25q128jv_write_disable(w25q128jv_t *device) {
     uint8_t tx_buf[1] = {W25Q128JV_WRITE_DISABLE};
     uint8_t rx_buf[1];
-    device->spi_transfer(tx_buf, rx_buf, 1);
+    device->spi_transfer(device->context, tx_buf, rx_buf, 1);
 }
 
 /*
@@ -77,7 +77,7 @@ void w25q128jv_erase_sector(w25q128jv_t *device, uint16_t sector) {
         (mem_addr >> 8) & 0xFF, mem_addr & 0xFF};
     uint8_t rx_buf[4];
 
-    device->spi_transfer(tx_buf, rx_buf, 4);
+    device->spi_transfer(device->context, tx_buf, rx_buf, 4);
 }
 
 /*
@@ -109,5 +109,5 @@ void w25q128jv_write_page(w25q128jv_t *device, uint32_t page, uint16_t offset,
         tx_buf[i + 4] = data[i];
     }
 
-    device->spi_transfer(tx_buf, rx_buf, size + 4);
+    device->spi_transfer(device->context, tx_buf, rx_buf, size + 4);
 }

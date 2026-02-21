@@ -1,38 +1,51 @@
 #include "vehicle.h"
 
-static void vehicle_logger_write_page(void *context, uint32_t page,
-    uint8_t *data) {
-    w25q128jv_t *flash = (w25q128jv_t *)context;
-    w25q128jv_write_page(flash, page, 0,
+static void logger_write_page(void *context, uint32_t page, uint8_t *data) {
+    vehicle_t *vehicle = (vehicle_t *)context;
+    w25q128jv_write_page(&vehicle->flash, page, 0,
         LOGGER_MSG_PER_PAGE * sizeof(message_t), data);
 }
 
-static void vehicle_logger_erase_sector(void *context, uint16_t sector) {
-    w25q128jv_t *flash = (w25q128jv_t *)context;
-    w25q128jv_erase_sector(flash, sector);
+static void logger_erase_sector(void *context, uint16_t sector) {
+    vehicle_t *vehicle = (vehicle_t *)context;
+    w25q128jv_erase_sector(&vehicle->flash, sector);
 }
 
-static void vehicle_logger_write_enable(void *context) {
-    w25q128jv_t *flash = (w25q128jv_t *)context;
-    w25q128jv_write_enable(flash);
+static void logger_write_enable(void *context) {
+    vehicle_t *vehicle = (vehicle_t *)context;
+    w25q128jv_write_enable(&vehicle->flash);
 }
 
-static void vehicle_logger_write_disable(void *context) {
-    w25q128jv_t *flash = (w25q128jv_t *)context;
-    w25q128jv_write_disable(flash);
+static void logger_write_disable(void *context) {
+    vehicle_t *vehicle = (vehicle_t *)context;
+    w25q128jv_write_disable(&vehicle->flash);
 }
 
-static void vehicle_logger_read_page(void *context, uint32_t page,
-    uint8_t *data) {
-    w25q128jv_t *flash = (w25q128jv_t *)context;
-    w25q128jv_read(flash, page, 0, LOGGER_MSG_PER_PAGE * sizeof(message_t),
-        data);
+static void logger_read_page(void *context, uint32_t page, uint8_t *data) {
+    vehicle_t *vehicle = (vehicle_t *)context;
+    w25q128jv_read(&vehicle->flash, page, 0,
+        LOGGER_MSG_PER_PAGE * sizeof(message_t), data);
 }
 
-static void vehicle_logger_output_callback(void *context, char *str,
-    size_t len) {
-    (void)context;
-    uart_write_buf(UART1, str, len);
+static void logger_output_callback(void *context, char *str, size_t len) {
+    vehicle_t *vehicle = (vehicle_t *)context;
+    uart_write_buf(&vehicle->debug_uart, str, len);
+}
+
+static void icm45686_spi_transfer(void *context, const uint8_t *tx_buf,
+    uint8_t *rx_buf, size_t len) {
+    vehicle_t *vehicle = (vehicle_t *)context;
+    gpio_write(&vehicle->icm45686_spi.cs, false);
+    spi_transfer_buf(&vehicle->icm45686_spi, tx_buf, rx_buf, len);
+    gpio_write(&vehicle->icm45686_spi.cs, true);
+}
+
+static void w25q128jv_spi_transfer(void *context, const uint8_t *tx_buf,
+    uint8_t *rx_buf, size_t len) {
+    vehicle_t *vehicle = (vehicle_t *)context;
+    gpio_write(&vehicle->w25q128jv_spi.cs, false);
+    spi_transfer_buf(&vehicle->w25q128jv_spi, tx_buf, rx_buf, len);
+    gpio_write(&vehicle->w25q128jv_spi.cs, true);
 }
 
 void vehicle_init(vehicle_t *vehicle) {
@@ -40,42 +53,52 @@ void vehicle_init(vehicle_t *vehicle) {
     vehicle->ins_timer = 0;
     vehicle->counter = 0;
 
-    board_init();
+    vehicle->icm45686_spi.spi_reg = SPI1;
+    vehicle->icm45686_spi.cs = board_pins.spi1_cs;
+    vehicle->icm45686_spi.miso = board_pins.spi1_miso;
+    vehicle->icm45686_spi.mosi = board_pins.spi1_mosi;
+    vehicle->icm45686_spi.sck = board_pins.spi1_sck;
 
-    vehicle_imu_init(vehicle);
-    vehicle_flash_init(vehicle);
-    vehicle_ins_init(vehicle);
-    vehicle_logger_init(vehicle);
-}
+    vehicle->w25q128jv_spi.spi_reg = SPI2;
+    vehicle->w25q128jv_spi.cs = board_pins.spi2_cs;
+    vehicle->w25q128jv_spi.miso = board_pins.spi2_miso;
+    vehicle->w25q128jv_spi.mosi = board_pins.spi2_mosi;
+    vehicle->w25q128jv_spi.sck = board_pins.spi2_sck;
 
-void vehicle_imu_init(vehicle_t *vehicle) {
-    vehicle->imu.spi_transfer = board_icm45686_spi_transfer;
+    vehicle->debug_uart.uart_reg = UART1;
+    vehicle->debug_uart.tx = board_pins.uart1_tx;
+    vehicle->debug_uart.rx = board_pins.uart1_rx;
+    vehicle->debug_uart.baud = 115200;
+
+    systick_init();
+    gpio_init(&board_pins.led);
+    uart_init(&vehicle->debug_uart);
+    spi_init(&vehicle->icm45686_spi);
+    spi_init(&vehicle->w25q128jv_spi);
+
+    vehicle->imu.context = vehicle;
+    vehicle->imu.spi_transfer = icm45686_spi_transfer;
     icm45686_init(&vehicle->imu);
-}
 
-void vehicle_flash_init(vehicle_t *vehicle) {
-    vehicle->flash.spi_transfer = board_w25q128jv_spi_transfer;
-}
+    vehicle->flash.context = vehicle;
+    vehicle->flash.spi_transfer = w25q128jv_spi_transfer;
 
-void vehicle_ins_init(vehicle_t *vehicle) {
     ins_init(&vehicle->ins);
-}
 
-void vehicle_logger_init(vehicle_t *vehicle) {
-    vehicle->logger.context = &vehicle->flash;
-    vehicle->logger.write_page = vehicle_logger_write_page;
-    vehicle->logger.erase_sector = vehicle_logger_erase_sector;
-    vehicle->logger.write_enable = vehicle_logger_write_enable;
-    vehicle->logger.write_disable = vehicle_logger_write_disable;
-    vehicle->logger.read_page = vehicle_logger_read_page;
+    vehicle->logger.context = vehicle;
+    vehicle->logger.write_page = logger_write_page;
+    vehicle->logger.erase_sector = logger_erase_sector;
+    vehicle->logger.write_enable = logger_write_enable;
+    vehicle->logger.write_disable = logger_write_disable;
+    vehicle->logger.read_page = logger_read_page;
     vehicle->logger.delay_ms = delay;
-    vehicle->logger.output_callback = vehicle_logger_output_callback;
+    vehicle->logger.output_callback = logger_output_callback;
     logger_init(&vehicle->logger);
 }
 
 void vehicle_update_flight(vehicle_t *vehicle) {
     if (timer_expired(&vehicle->led_timer, 500)) {
-        gpio_write(board_pins.led, vehicle->led_on);
+        gpio_write(&board_pins.led, vehicle->led_on);
         vehicle->led_on = !vehicle->led_on;
     }
 
@@ -106,7 +129,7 @@ void vehicle_update_flight(vehicle_t *vehicle) {
 
 void vehicle_update_calibrate(vehicle_t *vehicle) {
     if (timer_expired(&vehicle->led_timer, 500)) {
-        gpio_write(board_pins.led, vehicle->led_on);
+        gpio_write(&board_pins.led, vehicle->led_on);
         vehicle->led_on = !vehicle->led_on;
     }
 }
@@ -121,7 +144,7 @@ void vehicle_update_erase(vehicle_t *vehicle) {
     for (;;) spin(1);
 }
 
-boot_mode_t vehicle_run_cli() {
+boot_mode_t vehicle_run_cli(vehicle_t *vehicle) {
     uint8_t cmd_buf_len = 32;
     char cmd_buf[cmd_buf_len];
     uint8_t idx = 0;
@@ -129,7 +152,7 @@ boot_mode_t vehicle_run_cli() {
     uint32_t start_time = get_time();
 
     for (;;) {
-        while (!uart_read_ready(UART1)) {
+        while (!uart_read_ready(&vehicle->debug_uart)) {
             // Default to flight mode after 10 seconds
             if (get_time() - start_time > 10000) {
                 return BOOT_MODE_FLIGHT;
@@ -139,30 +162,33 @@ boot_mode_t vehicle_run_cli() {
                 char uart_buf[100] = "Missile CLI\r\n"
                     "(1) Flight\r\n(2) Calibrate\r\n(3) Fin Test\r\n"
                     "(4) HITL\r\n(5) Retrieve\r\n(9) Erase\r\n";
-                uart_write_buf(UART1, uart_buf, strlen(uart_buf));
+                uart_write_buf(&vehicle->debug_uart, uart_buf,
+                    strlen(uart_buf));
             }
         }
 
-        char c = uart_read_byte(UART1);
+        char c = uart_read_byte(&vehicle->debug_uart);
 
         if (c == '\r' || c == '\n') {
             cmd_buf[idx] = '\0';
             idx = 0;
 
             if (strcmp(cmd_buf, "1") == 0) {
-                uart_write_buf(UART1, "Flight Selected\r\n", 17);
+                uart_write_buf(&vehicle->debug_uart, "Flight Selected\r\n", 17);
                 return BOOT_MODE_FLIGHT;
             } else if (strcmp(cmd_buf, "2") == 0) {
-                uart_write_buf(UART1, "Calibrate Selected\r\n", 20);
+                uart_write_buf(&vehicle->debug_uart, "Calibrate Selected\r\n",
+                    20);
                 return BOOT_MODE_CALIBRATE;
             } else if (strcmp(cmd_buf, "5") == 0) {
-                uart_write_buf(UART1, "Retrieve Selected\r\n", 19);
+                uart_write_buf(&vehicle->debug_uart, "Retrieve Selected\r\n",
+                    19);
                 return BOOT_MODE_RETREIVE;
             } else if (strcmp(cmd_buf, "9") == 0) {
-                uart_write_buf(UART1, "Erase Selected\r\n", 16);
+                uart_write_buf(&vehicle->debug_uart, "Erase Selected\r\n", 16);
                 return BOOT_MODE_ERASE;
             } else {
-                uart_write_buf(UART1, "Invalid\r\n", 9);
+                uart_write_buf(&vehicle->debug_uart, "Invalid\r\n", 9);
             }
 
             continue;
@@ -193,5 +219,5 @@ void vehicle_print_state(vehicle_t *vehicle) {
         (double)roll, (double)pitch, (double)yaw,
         (double)vehicle->ins.vel.x, (double)vehicle->ins.vel.y,
         (double)vehicle->ins.vel.z);
-    uart_write_buf(UART1, uart_buf, strlen(uart_buf));
+    uart_write_buf(&vehicle->debug_uart, uart_buf, strlen(uart_buf));
 }

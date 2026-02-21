@@ -1,10 +1,7 @@
 #ifndef REGISTERS_H
 #define REGISTERS_H
 
-#include <inttypes.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include <stdint.h>
 
 struct rcc_reg {
     volatile uint32_t CR;
@@ -82,7 +79,7 @@ struct spi_reg {
 };
 
 #define RCC ((struct rcc_reg *) 0x40021000)
-#define SYSTICK ((struct systick_reg *) 0xe000e010)
+#define SYSTICK ((struct systick_reg *) 0xE000E010)
 #define GPIOA ((struct gpio_reg *) 0x50000000)
 #define GPIOB ((struct gpio_reg *) 0x50000400)
 #define GPIOC ((struct gpio_reg *) 0x50000800)
