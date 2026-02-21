@@ -35,7 +35,6 @@ void vehicle_flash_init(vehicle_t *vehicle);
 void vehicle_ins_init(vehicle_t *vehicle);
 void vehicle_logger_init(vehicle_t *vehicle);
 
-void vehicle_update(vehicle_t *vehicle);
 void vehicle_update_flight(vehicle_t *vehicle);
 void vehicle_update_calibrate(vehicle_t *vehicle);
 void vehicle_update_retreive(vehicle_t *vehicle);

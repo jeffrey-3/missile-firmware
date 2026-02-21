@@ -5,9 +5,14 @@
 #include <stdint.h>
 #include "registers.h"
 #include "clock.h"
+#include "gpio.h"
 
 typedef struct {
     struct spi_reg *spi_reg;
+    gpio_t cs;
+    gpio_t miso;
+    gpio_t mosi;
+    gpio_t sck;
 } spi_t;
 
 void spi_init(spi_t *spi);

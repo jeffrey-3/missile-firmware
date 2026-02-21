@@ -1,6 +1,13 @@
 #include "spi.h"
 
 void spi_init(spi_t *spi) {
+    gpio_init(spi->cs);
+    gpio_write(spi->cs, true);
+
+    gpio_init(spi->miso);
+    gpio_init(spi->mosi);
+    gpio_init(spi->sck);
+
     if (spi->spi_reg == SPI1) {
         RCC->APBENR2 |= BIT(12);
     } else if (spi->spi_reg == SPI2) {
