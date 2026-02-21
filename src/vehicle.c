@@ -79,9 +79,11 @@ void vehicle_init(vehicle_t *vehicle) {
     spi_init(&vehicle->icm45686_spi);
     spi_init(&vehicle->w25q128jv_spi);
 
+    vehicle->imu.context = &vehicle;
     vehicle->imu.spi_transfer = icm45686_spi_transfer;
     icm45686_init(&vehicle->imu);
 
+    vehicle->flash.context = &vehicle;
     vehicle->flash.spi_transfer = w25q128jv_spi_transfer;
 
     ins_init(&vehicle->ins);

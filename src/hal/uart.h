@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include "registers.h"
+#include "clock.h"
 #include "gpio.h"
 
 typedef struct {

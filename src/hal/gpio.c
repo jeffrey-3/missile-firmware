@@ -3,11 +3,11 @@
 void gpio_init(gpio_t *gpio) {
     // Enable GPIO clock
     if (gpio->gpio_reg == GPIOA) {
-        RCC->IOPENR |= BIT(0);
+        RCC->IOPENR |= 1UL;
     } else if (gpio->gpio_reg == GPIOB) {
-        RCC->IOPENR |= BIT(1);
+        RCC->IOPENR |= 1UL << 1;
     } else if (gpio->gpio_reg == GPIOC) {
-        RCC->IOPENR |= BIT(2);
+        RCC->IOPENR |= 1UL << 2;
     }
 
     // Set mode
