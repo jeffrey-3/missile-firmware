@@ -1,8 +1,13 @@
 #ifndef UART_H
 #define UART_H
 
+#include "registers.h"
+#include "gpio.h"
+
 typedef struct {
     struct uart_reg *uart_reg;
+    gpio_t tx;
+    gpio_t rx;
     unsigned long baud;
 } uart_t;
 

@@ -1,6 +1,9 @@
 #include "uart.h"
 
 void uart_init(uart_t *uart) {
+    gpio_init(uart->tx);
+    gpio_init(uart->rx);
+
     if (uart->uart_reg == UART1) {
         RCC->APBENR2 |= BIT(14);
     }
