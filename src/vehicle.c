@@ -52,6 +52,7 @@ void vehicle_init(vehicle_t *vehicle) {
     vehicle->led_timer = 0;
     vehicle->ins_timer = 0;
     vehicle->counter = 0;
+    vehicle->led_on = false;
 
     vehicle->icm45686_spi.spi_reg = SPI1;
     vehicle->icm45686_spi.cs = board_pins.spi1_cs;
