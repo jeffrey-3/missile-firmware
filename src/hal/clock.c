@@ -2,15 +2,15 @@
 
 static volatile uint32_t current_time = 0;
 
-void _systick_handler(void) {
-    current_time++;
-}
-
 void systick_init() {
     SYSTICK->LOAD = FREQ / 1000 - 1; // Tick every 1ms
     SYSTICK->VAL = 0;
     SYSTICK->CTRL = BIT(0) | BIT(1) | BIT(2); // Enable systick
     RCC->APBENR2 |= BIT(0); // Enable SYSCFG
+}
+
+void systick_handler(void) {
+    current_time++;
 }
 
 void delay(uint32_t duration) {
