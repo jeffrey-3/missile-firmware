@@ -80,23 +80,23 @@ void vehicle_update_flight(vehicle_t *vehicle) {
     }
 
     if (timer_expired(&vehicle->ins_timer, 10)) {
-        float accel[3], gyro[3];
-        icm45686_read_accel(&vehicle->imu, accel);
-        icm45686_read_gyro(&vehicle->imu, gyro);
+        icm45686_read_accel(&vehicle->imu, vehicle->accel);
+        icm45686_read_gyro(&vehicle->imu, vehicle->gyro);
 
-        ins_update(&vehicle->ins, gyro[0], gyro[1], gyro[2],
-            accel[0], accel[1], accel[2], 0.01f);
+        ins_update(&vehicle->ins, vehicle->gyro[0], vehicle->gyro[1],
+            vehicle->gyro[2], vehicle->accel[0], vehicle->accel[1],
+            vehicle->accel[2], 0.01f);
 
         vehicle->counter++;
         message_t message = {
             .counter = vehicle->counter,
             .time = get_time(),
-            .gx = gyro[0],
-            .gy = gyro[1],
-            .gz = gyro[2],
-            .ax = accel[0],
-            .ay = accel[1],
-            .az = accel[2]
+            .gx = vehicle->gyro[0],
+            .gy = vehicle->gyro[1],
+            .gz = vehicle->gyro[2],
+            .ax = vehicle->accel[0],
+            .ay = vehicle->accel[1],
+            .az = vehicle->accel[2]
         };
         logger_write(&vehicle->logger, message);
 

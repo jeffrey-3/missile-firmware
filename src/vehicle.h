@@ -25,6 +25,8 @@ typedef struct {
     uint32_t led_timer;
     uint32_t ins_timer;
     uint32_t counter;
+    float accel[3];
+    float gyro[3];
 } vehicle_t;
 
 void vehicle_init(vehicle_t *vehicle);
