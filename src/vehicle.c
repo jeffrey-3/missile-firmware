@@ -1,5 +1,28 @@
 #include "vehicle.h"
 
+static spi_t icm45686_spi = {
+    .spi_reg = SPI1,
+    .cs = board_pins.spi1_cs,
+    .miso = board_pins.spi1_miso,
+    .mosi = board_pins.spi1_mosi,
+    .sck = board_pins.spi1_sck
+}
+
+static spi_t w25q128jv_spi = {
+    .spi_reg = SPI2,
+    .cs = board_pins.spi2_cs,
+    .miso = board_pins.spi2_miso,
+    .mosi = board_pins.spi2_mosi,
+    .sck = board_pins.spi2_sck
+}
+
+static uart_t debug_uart = {
+    .uart_reg = UART1,
+    .tx = board_pins.uart1_tx,
+    .rx = board_pins.uart1_rx,
+    .baud = 115200
+}
+
 static void logger_write_page(void *context, uint32_t page,
     uint8_t *data) {
     w25q128jv_t *flash = (w25q128jv_t *)context;
@@ -35,33 +58,38 @@ static void logger_output_callback(void *context, char *str,
     uart_write_buf(UART1, str, len);
 }
 
+static void icm45686_spi_transfer(const uint8_t *tx_buf, uint8_t *rx_buf,
+    size_t len) {
+    gpio_write(&icm45686_spi.cs, false);
+    spi_transfer_buf(&icm45686_spi, tx_buf, rx_buf, len);
+    gpio_write(&icm45686.cs, true);
+}
+
+static void w25q128jv_spi_transfer(const uint8_t *tx_buf, uint8_t *rx_buf,
+    size_t len) {
+    gpio_write(&w25q128jv_spi.cs, false);
+    spi_transfer_buf(&w25q128jv_spi, tx_buf, rx_buf, len);
+    gpio_write(&w25q128jv_spi.cs, true);
+}
+
 void vehicle_init(vehicle_t *vehicle) {
     vehicle->led_timer = 0;
     vehicle->ins_timer = 0;
     vehicle->counter = 0;
 
-    board_init();
+    systick_init();
+    gpio_init(&board_pins.led);
+    uart_init(&debug_uart);
+    spi_init(&icm45686_spi);
+    spi_init(&w25q128jv_spi);
 
-    vehicle_imu_init(vehicle);
-    vehicle_flash_init(vehicle);
-    vehicle_ins_init(vehicle);
-    vehicle_logger_init(vehicle);
-}
-
-void vehicle_imu_init(vehicle_t *vehicle) {
-    vehicle->imu.spi_transfer = board_icm45686_spi_transfer;
+    vehicle->imu.spi_transfer = icm45686_spi_transfer;
     icm45686_init(&vehicle->imu);
-}
 
-void vehicle_flash_init(vehicle_t *vehicle) {
-    vehicle->flash.spi_transfer = board_w25q128jv_spi_transfer;
-}
+    vehicle->flash.spi_transfer = w25q128jv_spi_transfer;
 
-void vehicle_ins_init(vehicle_t *vehicle) {
     ins_init(&vehicle->ins);
-}
 
-void vehicle_logger_init(vehicle_t *vehicle) {
     vehicle->logger.context = &vehicle->flash;
     vehicle->logger.write_page = logger_write_page;
     vehicle->logger.erase_sector = logger_erase_sector;
@@ -143,7 +171,7 @@ boot_mode_t vehicle_run_cli() {
             }
         }
 
-        char c = uart_read_byte(UART1);
+        char c = uart_read_byte(&debug_uart);
 
         if (c == '\r' || c == '\n') {
             cmd_buf[idx] = '\0';
@@ -193,5 +221,5 @@ void vehicle_print_state(vehicle_t *vehicle) {
         (double)roll, (double)pitch, (double)yaw,
         (double)vehicle->ins.vel.x, (double)vehicle->ins.vel.y,
         (double)vehicle->ins.vel.z);
-    uart_write_buf(UART1, uart_buf, strlen(uart_buf));
+    uart_write_buf(&debug_uart, uart_buf, strlen(uart_buf));
 }

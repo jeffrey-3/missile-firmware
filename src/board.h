@@ -1,10 +1,7 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include "hal/clock.h"
 #include "hal/gpio.h"
-#include "hal/uart.h"
-#include "hal/spi.h"
 
 typedef struct {
     gpio_t led;
@@ -21,11 +18,5 @@ typedef struct {
 } board_pins_t;
 
 extern const board_pins_t board_pins;
-
-void board_init(void);
-void board_icm45686_spi_transfer(const uint8_t *tx_buf, uint8_t *rx_buf,
-    size_t len);
-void board_w25q128jv_spi_transfer(const uint8_t *tx_buf, uint8_t *rx_buf,
-    size_t len);
 
 #endif // BOARD_H
