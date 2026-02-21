@@ -7,7 +7,7 @@ LDFLAGS ?= -Tlink.ld -nostartfiles -nostdlib --specs nano.specs \
 SOURCES = src/main.c \
           src/startup.c \
           src/syscalls.c \
-          src/hal/hal.c \
+          src/hal/clock.c \
           src/hal/gpio.c \
           src/hal/uart.c \
           src/hal/spi.c \

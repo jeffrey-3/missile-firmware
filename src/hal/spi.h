@@ -1,6 +1,11 @@
 #ifndef SPI_H
 #define SPI_H
 
+#include <stddef.h>
+#include <stdint.h>
+#include "registers.h"
+#include "clock.h"
+
 typedef struct {
     struct spi_reg *spi_reg;
 } spi_t;

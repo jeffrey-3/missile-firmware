@@ -1,4 +1,4 @@
-#include "hal.h"
+#include "clock.h"
 
 static volatile uint32_t current_time = 0;
 
