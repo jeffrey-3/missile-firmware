@@ -1,6 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#define FREQ 16000000 // 16 MHz
+
 #define LOGGER_RING_BUF_SIZE 1024 // Must be a power of 2
 #define LOGGER_MSG_PER_PAGE 5
 #define LOGGER_SECTOR_ERASE_TIME 450
