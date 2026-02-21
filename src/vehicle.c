@@ -1,7 +1,6 @@
 #include "vehicle.h"
 
-static void logger_write_page(void *context, uint32_t page,
-    uint8_t *data) {
+static void logger_write_page(void *context, uint32_t page, uint8_t *data) {
     vehicle_t *vehicle = (vehicle_t *)context;
     w25q128jv_write_page(&vehicle->flash, page, 0,
         LOGGER_MSG_PER_PAGE * sizeof(message_t), data);
@@ -22,15 +21,13 @@ static void logger_write_disable(void *context) {
     w25q128jv_write_disable(&vehicle->flash);
 }
 
-static void logger_read_page(void *context, uint32_t page,
-    uint8_t *data) {
+static void logger_read_page(void *context, uint32_t page, uint8_t *data) {
     vehicle_t *vehicle = (vehicle_t *)context;
     w25q128jv_read(&vehicle->flash, page, 0,
         LOGGER_MSG_PER_PAGE * sizeof(message_t), data);
 }
 
-static void logger_output_callback(void *context, char *str,
-    size_t len) {
+static void logger_output_callback(void *context, char *str, size_t len) {
     vehicle_t *vehicle = (vehicle_t *)context;
     uart_write_buf(&vehicle->debug_uart, str, len);
 }
@@ -79,16 +76,16 @@ void vehicle_init(vehicle_t *vehicle) {
     spi_init(&vehicle->icm45686_spi);
     spi_init(&vehicle->w25q128jv_spi);
 
-    vehicle->imu.context = &vehicle;
+    vehicle->imu.context = vehicle;
     vehicle->imu.spi_transfer = icm45686_spi_transfer;
     icm45686_init(&vehicle->imu);
 
-    vehicle->flash.context = &vehicle;
+    vehicle->flash.context = vehicle;
     vehicle->flash.spi_transfer = w25q128jv_spi_transfer;
 
     ins_init(&vehicle->ins);
 
-    vehicle->logger.context = &vehicle;
+    vehicle->logger.context = vehicle;
     vehicle->logger.write_page = logger_write_page;
     vehicle->logger.erase_sector = logger_erase_sector;
     vehicle->logger.write_enable = logger_write_enable;

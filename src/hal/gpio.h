@@ -14,7 +14,7 @@ enum {
 
 typedef struct {
     struct gpio_reg *gpio_reg;
-    uint8_t pin;
+    int pin;
     uint8_t af;
     uint8_t mode;
 } gpio_t;

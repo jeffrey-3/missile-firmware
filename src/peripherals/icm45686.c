@@ -1,6 +1,6 @@
 #include "icm45686.h"
 
-void icm45686_init(icm45686_t  *device) {
+void icm45686_init(icm45686_t *device) {
     uint8_t tx_buf[2];
     uint8_t rx_buf[2];
 
