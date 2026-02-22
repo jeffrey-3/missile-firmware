@@ -23,7 +23,6 @@ typedef enum {
 typedef struct {
     ins_t ins;
     logger_t logger;
-    icm45686_t imu;
     spi_t imu_spi;
     spi_t flash_spi;
     uart_t debug_uart;
@@ -33,8 +32,6 @@ typedef struct {
     uint32_t led_timer;
     uint32_t ins_timer;
     uint32_t counter;
-    float accel[3];
-    float gyro[3];
 } vehicle_t;
 
 void vehicle_init(vehicle_t *vehicle);

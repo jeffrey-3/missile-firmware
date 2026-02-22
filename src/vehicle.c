@@ -17,8 +17,7 @@ void vehicle_init(vehicle_t *vehicle) {
     spi_init(&vehicle->flash_spi, SPI2, &board_pins.spi2_cs,
         &board_pins.spi2_miso, &board_pins.spi2_mosi, &board_pins.spi2_sck);
 
-    icm45686_init(&vehicle->imu, &vehicle->imu_spi);
-    ins_init(&vehicle->ins);
+    ins_init(&vehicle->ins, &vehicle->imu_spi);
     logger_init(&vehicle->logger, &vehicle->flash_spi, &vehicle->debug_uart);
 }
 
@@ -29,23 +28,18 @@ void vehicle_update_flight(vehicle_t *vehicle) {
     }
 
     if (timer_expired(&vehicle->ins_timer, 10)) {
-        icm45686_read_accel(&vehicle->imu, vehicle->accel);
-        icm45686_read_gyro(&vehicle->imu, vehicle->gyro);
-
-        ins_update(&vehicle->ins, vehicle->gyro[0], vehicle->gyro[1],
-            vehicle->gyro[2], vehicle->accel[0], vehicle->accel[1],
-            vehicle->accel[2], 0.01f);
+        ins_update(&vehicle->ins, 0.01f);
 
         vehicle->counter++;
         message_t message = {
             .counter = vehicle->counter,
             .time = get_time(),
-            .gx = vehicle->gyro[0],
-            .gy = vehicle->gyro[1],
-            .gz = vehicle->gyro[2],
-            .ax = vehicle->accel[0],
-            .ay = vehicle->accel[1],
-            .az = vehicle->accel[2]
+            .gx = vehicle->ins.gyro[0],
+            .gy = vehicle->ins.gyro[1],
+            .gz = vehicle->ins.gyro[2],
+            .ax = vehicle->ins.accel[0],
+            .ay = vehicle->ins.accel[1],
+            .az = vehicle->ins.accel[2]
         };
         logger_write(&vehicle->logger, message);
 
