@@ -32,19 +32,11 @@ static void logger_output_callback(void *context, char *str, size_t len) {
     uart_write_buf(&vehicle->debug_uart, str, len);
 }
 
-static void icm45686_spi_transfer(void *context, const uint8_t *tx_buf,
-    uint8_t *rx_buf, size_t len) {
-    vehicle_t *vehicle = (vehicle_t *)context;
-    gpio_write(&vehicle->icm45686_spi.cs, false);
-    spi_transfer_buf(&vehicle->icm45686_spi, tx_buf, rx_buf, len);
-    gpio_write(&vehicle->icm45686_spi.cs, true);
-}
-
 static void w25q128jv_spi_transfer(void *context, const uint8_t *tx_buf,
     uint8_t *rx_buf, size_t len) {
     vehicle_t *vehicle = (vehicle_t *)context;
     gpio_write(&vehicle->w25q128jv_spi.cs, false);
-    spi_transfer_buf(&vehicle->w25q128jv_spi, tx_buf, rx_buf, len);
+    spi_transfer(&vehicle->w25q128jv_spi, tx_buf, rx_buf, len);
     gpio_write(&vehicle->w25q128jv_spi.cs, true);
 }
 
@@ -85,9 +77,7 @@ void vehicle_init(vehicle_t *vehicle) {
     spi_init(&vehicle->icm45686_spi);
     spi_init(&vehicle->w25q128jv_spi);
 
-    vehicle->imu.context = vehicle;
-    vehicle->imu.spi_transfer = icm45686_spi_transfer;
-    icm45686_init(&vehicle->imu);
+    icm45686_init(&vehicle->imu, &vehicle->icm45686_spi);
 
     vehicle->flash.context = vehicle;
     vehicle->flash.spi_transfer = w25q128jv_spi_transfer;

@@ -1,29 +1,38 @@
 #include "icm45686.h"
 
-void icm45686_init(icm45686_t *device) {
+static void icm45686_read_write(icm45686_t *device, const uint8_t *tx_buf,
+    uint8_t *rx_buf, size_t len) {
+    gpio_write(&device->spi->cs, false);
+    spi_transfer(device->spi, tx_buf, rx_buf, len);
+    gpio_write(&device->spi->cs, false);
+}
+
+void icm45686_init(icm45686_t *device, spi_t *spi) {
+    device->spi = spi;
+
     uint8_t tx_buf[2];
     uint8_t rx_buf[2];
 
     // Enable gyroscope and accelerometer in low noise mode
     tx_buf[0] = ICM45686_PWR_MGMT0;
     tx_buf[1] = 0x0F;
-    device->spi_transfer(device->context, tx_buf, rx_buf, 2);
+    icm45686_read_write(device, tx_buf, rx_buf, 2);
 
     // Set gyroscope to 200Hz data rate and 4000dps range
     tx_buf[0] = ICM45686_GYRO_CONFIG0;
     tx_buf[1] = 0x08;
-    device->spi_transfer(device->context, tx_buf, rx_buf, 2);
+    icm45686_read_write(device, tx_buf, rx_buf, 2);
 
     // Set accelerometer to 200Hz data rate and 32g range
     tx_buf[0] = ICM45686_ACCEL_CONFIG0;
     tx_buf[1] = 0x08;
-    device->spi_transfer(device->context, tx_buf, rx_buf, 2);
+    icm45686_read_write(device, tx_buf, rx_buf, 2);
 }
 
 uint8_t icm45686_read_id(icm45686_t *device) {
     uint8_t tx_buf[2] = {ICM45686_WHO_AM_I | 0x80, 0x00};
     uint8_t rx_buf[2];
-    device->spi_transfer(device->context, tx_buf, rx_buf, 2);
+    icm45686_read_write(device, tx_buf, rx_buf, 2);
     return rx_buf[1];
 }
 
@@ -31,7 +40,7 @@ void icm45686_read_accel(icm45686_t *device, float *data) {
     uint8_t tx_buf[7] = {ICM45686_ACCEL_DATA_X1_UI | 0x80, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00};
     uint8_t rx_buf[7];
-    device->spi_transfer(device->context, tx_buf, rx_buf, 7);
+    icm45686_read_write(device, tx_buf, rx_buf, 7);
 
     int16_t raw_x = (int16_t)((rx_buf[2] << 8) | rx_buf[1]);
     int16_t raw_y = (int16_t)((rx_buf[4] << 8) | rx_buf[3]);
@@ -47,7 +56,7 @@ void icm45686_read_gyro(icm45686_t *device, float *data) {
     uint8_t tx_buf[7] = {ICM45686_GYRO_DATA_X1_UI | 0x80, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00};
     uint8_t rx_buf[7];
-    device->spi_transfer(device->context, tx_buf, rx_buf, 7);
+    icm45686_read_write(device, tx_buf, rx_buf, 7);
 
     int16_t raw_x = (int16_t)((rx_buf[2] << 8) | rx_buf[1]);
     int16_t raw_y = (int16_t)((rx_buf[4] << 8) | rx_buf[3]);

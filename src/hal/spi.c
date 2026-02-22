@@ -24,21 +24,17 @@ void spi_init(spi_t *spi) {
     spi->spi_reg->CR1 |= 1UL << 6; // SPI peripheral enable
 }
 
-uint8_t spi_transfer(spi_t *spi, uint8_t tx_data) {
-    // Wait until TXE is set
-    while (!(spi->spi_reg->SR & (1UL << 1))) spin(1);
-
-    *(volatile uint8_t *)&spi->spi_reg->DR = tx_data;
-
-    // Wait until RXNE is set
-    while (!(spi->spi_reg->SR & 1UL)) spin(1);
-
-    return *(volatile uint8_t *)&spi->spi_reg->DR;
-}
-
-void spi_transfer_buf(spi_t *spi, const uint8_t *tx_buf, uint8_t *rx_buf,
+void spi_transfer(spi_t *spi, const uint8_t *tx_buf, uint8_t *rx_buf,
     size_t len) {
     for (size_t i = 0; i < len; i++) {
-        rx_buf[i] = spi_transfer(spi, tx_buf[i]);
+        // Wait until TXE is set
+        while (!(spi->spi_reg->SR & (1UL << 1))) spin(1);
+
+        *(volatile uint8_t *)&spi->spi_reg->DR = tx_buf[i];
+
+        // Wait until RXNE is set
+        while (!(spi->spi_reg->SR & 1UL)) spin(1);
+
+        rx_buf[i] = *(volatile uint8_t *)&spi->spi_reg->DR;
     }
 }
