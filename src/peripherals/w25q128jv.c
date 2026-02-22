@@ -2,9 +2,9 @@
 
 static void w25q128jv_read_write(w25q128jv_t *device, const uint8_t *tx_buf,
     uint8_t *rx_buf, size_t len) {
-    gpio_write(&device->spi->cs, false);
+    gpio_write(device->spi->cs, false);
     spi_transfer(device->spi, tx_buf, rx_buf, len);
-    gpio_write(&device->spi->cs, false);
+    gpio_write(device->spi->cs, false);
 }
 
 void w25q128jv_init(w25q128jv_t *device, spi_t *spi) {

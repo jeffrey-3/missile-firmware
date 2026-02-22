@@ -1,12 +1,19 @@
 #include "spi.h"
 
-void spi_init(spi_t *spi) {
-    gpio_init(&spi->cs);
-    gpio_init(&spi->miso);
-    gpio_init(&spi->mosi);
-    gpio_init(&spi->sck);
+void spi_init(spi_t *spi, struct spi_reg *spi_reg, gpio_t *cs, gpio_t *miso,
+    gpio_t *mosi, gpio_t *sck) {
+    spi->spi_reg = spi_reg;
+    spi->cs = cs;
+    spi->miso = miso;
+    spi->mosi = mosi;
+    spi->sck = sck;
 
-    gpio_write(&spi->cs, true);
+    gpio_init(spi->cs);
+    gpio_init(spi->miso);
+    gpio_init(spi->mosi);
+    gpio_init(spi->sck);
+
+    gpio_write(spi->cs, true);
 
     if (spi->spi_reg == SPI1) {
         RCC->APBENR2 |= 1UL << 12;

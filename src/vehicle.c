@@ -6,31 +6,19 @@ void vehicle_init(vehicle_t *vehicle) {
     vehicle->counter = 0;
     vehicle->led_on = false;
 
-    vehicle->imu_spi.spi_reg = SPI1;
-    vehicle->imu_spi.cs = board_pins.spi1_cs;
-    vehicle->imu_spi.miso = board_pins.spi1_miso;
-    vehicle->imu_spi.mosi = board_pins.spi1_mosi;
-    vehicle->imu_spi.sck = board_pins.spi1_sck;
-
-    vehicle->flash_spi.spi_reg = SPI2;
-    vehicle->flash_spi.cs = board_pins.spi2_cs;
-    vehicle->flash_spi.miso = board_pins.spi2_miso;
-    vehicle->flash_spi.mosi = board_pins.spi2_mosi;
-    vehicle->flash_spi.sck = board_pins.spi2_sck;
-
     systick_init();
     gpio_init(&board_pins.led);
     timer_init(&vehicle->servo_y, TIM1, &board_pins.tim1_ch4);
     timer_init(&vehicle->servo_z, TIM3, &board_pins.tim3_ch2);
     uart_init(&vehicle->debug_uart, UART1, &board_pins.uart1_tx,
         &board_pins.uart1_rx, 115200);
-    spi_init(&vehicle->imu_spi);
-    spi_init(&vehicle->flash_spi);
+    spi_init(&vehicle->imu_spi, SPI1, &board_pins.spi1_cs,
+        &board_pins.spi1_miso, &board_pins.spi1_mosi, &board_pins.spi1_sck);
+    spi_init(&vehicle->flash_spi, SPI2, &board_pins.spi2_cs,
+        &board_pins.spi2_miso, &board_pins.spi2_mosi, &board_pins.spi2_sck);
 
     icm45686_init(&vehicle->imu, &vehicle->imu_spi);
-
     ins_init(&vehicle->ins);
-
     logger_init(&vehicle->logger, &vehicle->flash_spi, &vehicle->debug_uart);
 }
 
