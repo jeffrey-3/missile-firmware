@@ -1,54 +1,22 @@
 #include "vehicle.h"
 
-static void logger_write_page(void *context, uint32_t page, uint8_t *data) {
-    vehicle_t *vehicle = (vehicle_t *)context;
-    w25q128jv_write_page(&vehicle->flash, page, 0,
-        LOGGER_MSG_PER_PAGE * sizeof(message_t), data);
-}
-
-static void logger_erase_sector(void *context, uint16_t sector) {
-    vehicle_t *vehicle = (vehicle_t *)context;
-    w25q128jv_erase_sector(&vehicle->flash, sector);
-}
-
-static void logger_write_enable(void *context) {
-    vehicle_t *vehicle = (vehicle_t *)context;
-    w25q128jv_write_enable(&vehicle->flash);
-}
-
-static void logger_write_disable(void *context) {
-    vehicle_t *vehicle = (vehicle_t *)context;
-    w25q128jv_write_disable(&vehicle->flash);
-}
-
-static void logger_read_page(void *context, uint32_t page, uint8_t *data) {
-    vehicle_t *vehicle = (vehicle_t *)context;
-    w25q128jv_read(&vehicle->flash, page, 0,
-        LOGGER_MSG_PER_PAGE * sizeof(message_t), data);
-}
-
-static void logger_output_callback(void *context, char *str, size_t len) {
-    vehicle_t *vehicle = (vehicle_t *)context;
-    uart_write_buf(&vehicle->debug_uart, str, len);
-}
-
 void vehicle_init(vehicle_t *vehicle) {
     vehicle->led_timer = 0;
     vehicle->ins_timer = 0;
     vehicle->counter = 0;
     vehicle->led_on = false;
 
-    vehicle->icm45686_spi.spi_reg = SPI1;
-    vehicle->icm45686_spi.cs = board_pins.spi1_cs;
-    vehicle->icm45686_spi.miso = board_pins.spi1_miso;
-    vehicle->icm45686_spi.mosi = board_pins.spi1_mosi;
-    vehicle->icm45686_spi.sck = board_pins.spi1_sck;
+    vehicle->imu_spi.spi_reg = SPI1;
+    vehicle->imu_spi.cs = board_pins.spi1_cs;
+    vehicle->imu_spi.miso = board_pins.spi1_miso;
+    vehicle->imu_spi.mosi = board_pins.spi1_mosi;
+    vehicle->imu_spi.sck = board_pins.spi1_sck;
 
-    vehicle->w25q128jv_spi.spi_reg = SPI2;
-    vehicle->w25q128jv_spi.cs = board_pins.spi2_cs;
-    vehicle->w25q128jv_spi.miso = board_pins.spi2_miso;
-    vehicle->w25q128jv_spi.mosi = board_pins.spi2_mosi;
-    vehicle->w25q128jv_spi.sck = board_pins.spi2_sck;
+    vehicle->flash_spi.spi_reg = SPI2;
+    vehicle->flash_spi.cs = board_pins.spi2_cs;
+    vehicle->flash_spi.miso = board_pins.spi2_miso;
+    vehicle->flash_spi.mosi = board_pins.spi2_mosi;
+    vehicle->flash_spi.sck = board_pins.spi2_sck;
 
     vehicle->debug_uart.uart_reg = UART1;
     vehicle->debug_uart.tx = board_pins.uart1_tx;
@@ -60,24 +28,14 @@ void vehicle_init(vehicle_t *vehicle) {
     timer_init(&vehicle->servo_y, TIM1, &board_pins.tim1_ch4);
     timer_init(&vehicle->servo_z, TIM3, &board_pins.tim3_ch2);
     uart_init(&vehicle->debug_uart);
-    spi_init(&vehicle->icm45686_spi);
-    spi_init(&vehicle->w25q128jv_spi);
+    spi_init(&vehicle->imu_spi);
+    spi_init(&vehicle->flash_spi);
 
-    icm45686_init(&vehicle->imu, &vehicle->icm45686_spi);
-
-    w25q128jv_init(&vehicle->flash, &vehicle->w25q128jv_spi);
+    icm45686_init(&vehicle->imu, &vehicle->imu_spi);
 
     ins_init(&vehicle->ins);
 
-    vehicle->logger.context = vehicle;
-    vehicle->logger.write_page = logger_write_page;
-    vehicle->logger.erase_sector = logger_erase_sector;
-    vehicle->logger.write_enable = logger_write_enable;
-    vehicle->logger.write_disable = logger_write_disable;
-    vehicle->logger.read_page = logger_read_page;
-    vehicle->logger.delay_ms = delay;
-    vehicle->logger.output_callback = logger_output_callback;
-    logger_init(&vehicle->logger);
+    logger_init(&vehicle->logger, &vehicle->flash_spi, &vehicle->debug_uart);
 }
 
 void vehicle_update_flight(vehicle_t *vehicle) {

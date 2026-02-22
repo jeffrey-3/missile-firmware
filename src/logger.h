@@ -4,6 +4,10 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include "hal/clock.h"
+#include "hal/uart.h"
+#include "hal/spi.h"
+#include "peripherals/w25q128jv.h"
 #include "util/ring_buffer.h"
 #include "config.h"
 
@@ -18,29 +22,15 @@ typedef struct __attribute__((packed)) {
     float az;
 } message_t;
 
-typedef void (*logger_write_page_t)(void *context, uint32_t page,
-    uint8_t *data);
-typedef void (*logger_erase_sector_t)(void *context, uint16_t sector);
-typedef void (*logger_write_enable_t)(void *context);
-typedef void (*logger_write_disable_t)(void *context);
-typedef void (*logger_read_page_t)(void *context, uint32_t page, uint8_t *data);
-typedef void (*logger_delay_ms_t)(uint32_t ms);
-typedef void (*logger_output_callback_t)(void *context, char *str, size_t len);
-
 typedef struct {
-    logger_write_page_t write_page;
-    logger_erase_sector_t erase_sector;
-    logger_write_enable_t write_enable;
-    logger_write_disable_t write_disable;
-    logger_read_page_t read_page;
-    logger_delay_ms_t delay_ms;
-    logger_output_callback_t output_callback;
+    uart_t *debug_uart;
+    spi_t *flash_spi;
+    w25q128jv_t flash;
     uint32_t current_page;
     ring_buffer_t ring_buffer;
-    void *context;
 } logger_t;
 
-void logger_init(logger_t *logger);
+void logger_init(logger_t *logger, spi_t *spi, uart_t *debug_uart);
 void logger_write(logger_t *logger, message_t message);
 void logger_erase(logger_t *logger, uint16_t sector);
 void logger_read(logger_t *logger, uint32_t page, message_t *messages);

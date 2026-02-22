@@ -2,7 +2,6 @@
 #define VEHICLE_H
 
 #include "peripherals/icm45686.h"
-#include "peripherals/w25q128jv.h"
 #include "math/math.h"
 #include "math/quaternion.h"
 #include "hal/clock.h"
@@ -25,9 +24,8 @@ typedef struct {
     ins_t ins;
     logger_t logger;
     icm45686_t imu;
-    w25q128jv_t flash;
-    spi_t icm45686_spi;
-    spi_t w25q128jv_spi;
+    spi_t imu_spi;
+    spi_t flash_spi;
     uart_t debug_uart;
     timer_t servo_y;
     timer_t servo_z;
