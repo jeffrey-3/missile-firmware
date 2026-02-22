@@ -33,6 +33,9 @@ build/firmware.elf: $(SOURCES) | create-build
 build/firmware.bin: build/firmware.elf
 	arm-none-eabi-objcopy -O binary $< $@
 
+debug:
+	gdb-multiarch build/firmware.elf
+
 flash: build/firmware.bin
 	st-flash --reset write $< 0x8000000
 
