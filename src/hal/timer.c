@@ -1,8 +1,11 @@
 #include "timer.h"
 
-void timer_init(timer_t *timer) {
+void timer_init(timer_t *timer, struct tim_reg *tim_reg, gpio_t *gpio) {
+    timer->tim_reg = tim_reg;
+    timer->gpio = gpio;
+
     // Configure GPIO
-    gpio_init(&timer->gpio);
+    gpio_init(timer->gpio);
 
     // Enable peripheral clock
     if (timer->tim_reg == TIM1) {

@@ -55,16 +55,10 @@ void vehicle_init(vehicle_t *vehicle) {
     vehicle->debug_uart.rx = board_pins.uart1_rx;
     vehicle->debug_uart.baud = 115200;
 
-    vehicle->servo_y.tim_reg = TIM1;
-    vehicle->servo_y.gpio = board_pins.tim1_ch4;
-
-    vehicle->servo_z.tim_reg = TIM3;
-    vehicle->servo_z.gpio = board_pins.tim3_ch2;
-
     systick_init();
     gpio_init(&board_pins.led);
-    timer_init(&vehicle->servo_y);
-    timer_init(&vehicle->servo_z);
+    timer_init(&vehicle->servo_y, TIM1, &board_pins.tim1_ch4);
+    timer_init(&vehicle->servo_z, TIM3, &board_pins.tim3_ch2);
     uart_init(&vehicle->debug_uart);
     spi_init(&vehicle->icm45686_spi);
     spi_init(&vehicle->w25q128jv_spi);

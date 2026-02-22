@@ -6,9 +6,9 @@
 
 typedef struct {
     struct tim_reg *tim_reg;
-    gpio_t gpio;
+    gpio_t *gpio;
 } timer_t;
 
-void timer_init(timer_t *timer);
+void timer_init(timer_t *timer, struct tim_reg *tim_reg, gpio_t *gpio);
 
 #endif // TIMER_H
