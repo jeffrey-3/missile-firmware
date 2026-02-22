@@ -51,6 +51,36 @@ struct gpio_reg {
     volatile uint32_t BRR;
 };
 
+struct tim_reg {
+    volatile uint32_t CR1;
+    volatile uint32_t CR2;
+    volatile uint32_t SMCR;
+    volatile uint32_t DIER;
+    volatile uint32_t SR;
+    volatile uint32_t EGR;
+    volatile uint32_t CCMR1;
+    volatile uint32_t CCMR2;
+    volatile uint32_t CCER;
+    volatile uint32_t CNT;
+    volatile uint32_t PSC;
+    volatile uint32_t ARR;
+    volatile uint32_t RCR;
+    volatile uint32_t CCR1;
+    volatile uint32_t CCR2;
+    volatile uint32_t CCR3;
+    volatile uint32_t CCR4;
+    volatile uint32_t BDTR;
+    volatile uint32_t DCR;
+    volatile uint32_t DMAR;
+    volatile uint32_t OR1;
+    volatile uint32_t CCMR3;
+    volatile uint32_t CCR5;
+    volatile uint32_t CCR6;
+    volatile uint32_t AF1;
+    volatile uint32_t AF2;
+    volatile uint32_t TISEL;
+};
+
 struct uart_reg {
     volatile uint32_t CR1;
     volatile uint32_t CR2;
@@ -83,6 +113,8 @@ struct spi_reg {
 #define GPIOA ((struct gpio_reg *) 0x50000000)
 #define GPIOB ((struct gpio_reg *) 0x50000400)
 #define GPIOC ((struct gpio_reg *) 0x50000800)
+#define TIM1 ((struct tim_reg *) 0x40012C00)
+#define TIM3 ((struct tim_reg *) 0x40000400)
 #define UART1 ((struct uart_reg *) 0x40013800)
 #define SPI1 ((struct spi_reg *) 0x40013000)
 #define SPI2 ((struct spi_reg *) 0x40003800)
