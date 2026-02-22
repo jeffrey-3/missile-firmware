@@ -19,7 +19,7 @@ void vehicle_init(vehicle_t *vehicle, uart_t *debug_uart) {
     logger_init(&vehicle->logger, &vehicle->flash_spi, vehicle->debug_uart);
 }
 
-void vehicle_update_flight(vehicle_t *vehicle) {
+void vehicle_update(vehicle_t *vehicle) {
     if (timer_expired(&vehicle->led_timer, 500)) {
         gpio_write(&board_pins.led, vehicle->led_on);
         vehicle->led_on = !vehicle->led_on;

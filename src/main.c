@@ -74,7 +74,7 @@ int main(void) {
     switch (run_cli(&debug_uart)) {
         case BOOT_MODE_FLIGHT:
             for (;;) {
-                vehicle_update_flight(&vehicle);
+                vehicle_update(&vehicle);
             }
             break;
         case BOOT_MODE_CALIBRATE:
