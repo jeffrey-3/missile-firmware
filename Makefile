@@ -19,6 +19,7 @@ SOURCES = src/main.c \
           src/math/math.c \
           src/ins.c \
           src/logger.c \
+          src/control.c \
           src/vehicle.c \
           src/util/ring_buffer.c
 
