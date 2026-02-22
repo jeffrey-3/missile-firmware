@@ -17,7 +17,7 @@ void timer_init(timer_t *timer, struct tim_reg *tim_reg, gpio_t *gpio,
     }
 
     timer->tim_reg->PSC = 15; // Divide timer clock
-    timer->tim_reg->ARR = 2000; // Timer count to value from 0
+    timer->tim_reg->ARR = 3000; // Timer count to value from 0
 
     if (timer->channel == 4) {
         // PWM Mode 1 (set OC4M to 0110)
@@ -32,4 +32,15 @@ void timer_init(timer_t *timer, struct tim_reg *tim_reg, gpio_t *gpio,
 
     // Enable the clock counter
     timer->tim_reg->CR1 |= 1UL;
+}
+
+// Duty is a float from 0 to 1
+void timer_set_duty(timer_t *timer, float duty) {
+    if (timer->channel == 2) {
+        timer->tim_reg->CCR2 = (uint32_t)(duty *
+            (float)timer->tim_reg->ARR + 1);
+    } else if (timer->channel == 4) {
+        timer->tim_reg->CCR4 = (uint32_t)(duty *
+            (float)timer->tim_reg->ARR + 1);
+    }
 }

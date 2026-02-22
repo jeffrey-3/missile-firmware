@@ -6,7 +6,8 @@ void control_init(control_t *control, timer_t *servo_y, timer_t *servo_z) {
 }
 
 void control_update(control_t *control, ins_t *ins) {
-    control =control;
     ins = ins;
-    return;
+
+    timer_set_duty(control->servo_y, 0.5);
+    timer_set_duty(control->servo_z, 0.5);
 }
