@@ -8,8 +8,8 @@ void vehicle_init(vehicle_t *vehicle, uart_t *debug_uart) {
 
     systick_init();
     gpio_init(&board_pins.led);
-    timer_init(&vehicle->servo_y, TIM1, &board_pins.tim1_ch4);
-    timer_init(&vehicle->servo_z, TIM3, &board_pins.tim3_ch2);
+    timer_init(&vehicle->servo_y, TIM1, &board_pins.tim1_ch4, 4);
+    timer_init(&vehicle->servo_z, TIM3, &board_pins.tim3_ch2, 2);
     spi_init(&vehicle->imu_spi, SPI1, &board_pins.spi1_cs,
         &board_pins.spi1_miso, &board_pins.spi1_mosi, &board_pins.spi1_sck);
     spi_init(&vehicle->flash_spi, SPI2, &board_pins.spi2_cs,
