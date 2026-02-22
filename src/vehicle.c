@@ -18,16 +18,12 @@ void vehicle_init(vehicle_t *vehicle) {
     vehicle->flash_spi.mosi = board_pins.spi2_mosi;
     vehicle->flash_spi.sck = board_pins.spi2_sck;
 
-    vehicle->debug_uart.uart_reg = UART1;
-    vehicle->debug_uart.tx = board_pins.uart1_tx;
-    vehicle->debug_uart.rx = board_pins.uart1_rx;
-    vehicle->debug_uart.baud = 115200;
-
     systick_init();
     gpio_init(&board_pins.led);
     timer_init(&vehicle->servo_y, TIM1, &board_pins.tim1_ch4);
     timer_init(&vehicle->servo_z, TIM3, &board_pins.tim3_ch2);
-    uart_init(&vehicle->debug_uart);
+    uart_init(&vehicle->debug_uart, UART1, &board_pins.uart1_tx,
+        &board_pins.uart1_rx, 115200);
     spi_init(&vehicle->imu_spi);
     spi_init(&vehicle->flash_spi);
 

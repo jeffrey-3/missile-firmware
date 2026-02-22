@@ -1,8 +1,14 @@
 #include "uart.h"
 
-void uart_init(uart_t *uart) {
-    gpio_init(&uart->tx);
-    gpio_init(&uart->rx);
+void uart_init(uart_t *uart, struct uart_reg *uart_reg, gpio_t *tx, gpio_t *rx,
+    unsigned long baud) {
+    uart->uart_reg = uart_reg;
+    uart->tx = tx;
+    uart->rx = rx;
+    uart->baud = baud;
+
+    gpio_init(uart->tx);
+    gpio_init(uart->rx);
 
     if (uart->uart_reg == UART1) {
         RCC->APBENR2 |= 1UL << 14;
