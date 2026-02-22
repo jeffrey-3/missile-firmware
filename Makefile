@@ -11,6 +11,7 @@ SOURCES = src/main.c \
           src/hal/gpio.c \
           src/hal/uart.c \
           src/hal/spi.c \
+          src/hal/timer.c \
           src/board.c \
           src/peripherals/icm45686.c \
           src/peripherals/w25q128jv.c \
