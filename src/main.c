@@ -14,13 +14,9 @@ boot_mode_t run_cli(uart_t *uart) {
     uint32_t print_timer = 0;
     uint32_t start_time = get_time();
 
-    for (;;) {
+    // Default to flight mode after 10 seconds
+    while (get_time() - start_time < 10000) {
         while (!uart_read_ready(uart)) {
-            // Default to flight mode after 10 seconds
-            if (get_time() - start_time > 10000) {
-                return BOOT_MODE_FLIGHT;
-            }
-
             if (timer_expired(&print_timer, 2000)) {
                 char uart_buf[100] = "Missile CLI\r\n"
                     "(1) Flight\r\n(2) Calibrate\r\n(3) Fin Test\r\n"
@@ -60,6 +56,8 @@ boot_mode_t run_cli(uart_t *uart) {
             idx = 0;
         }
     }
+
+    return BOOT_MODE_FLIGHT;
 }
 
 int main(void) {
