@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include "../hal/spi.h"
 
 #define W25Q128JV_DEVICE_ID 0x90
 #define W25Q128JV_READ_DATA 0x03
@@ -11,15 +12,11 @@
 #define W25Q128JV_WRITE_DISABLE 0x04
 #define W25Q128JV_PAGE_PROGRAM 0x02
 
-typedef void (*w25q128jv_spi_transfer_t)(void *context, const uint8_t *tx_buf,
-    uint8_t *rx_buf, size_t len);
-typedef void (*w25q128jv_delay_ms_t)(uint32_t ms);
-
 typedef struct {
-    w25q128jv_spi_transfer_t spi_transfer;
-    void *context;
+    spi_t *spi;
 } w25q128jv_t;
 
+void w25q128jv_init(w25q128jv_t *device, spi_t *spi);
 uint8_t w25q128jv_read_id(w25q128jv_t *device);
 void w25q128jv_read(w25q128jv_t *device, uint32_t start_page, uint8_t offset,
     uint32_t size, uint8_t *data);

@@ -32,14 +32,6 @@ static void logger_output_callback(void *context, char *str, size_t len) {
     uart_write_buf(&vehicle->debug_uart, str, len);
 }
 
-static void w25q128jv_spi_transfer(void *context, const uint8_t *tx_buf,
-    uint8_t *rx_buf, size_t len) {
-    vehicle_t *vehicle = (vehicle_t *)context;
-    gpio_write(&vehicle->w25q128jv_spi.cs, false);
-    spi_transfer(&vehicle->w25q128jv_spi, tx_buf, rx_buf, len);
-    gpio_write(&vehicle->w25q128jv_spi.cs, true);
-}
-
 void vehicle_init(vehicle_t *vehicle) {
     vehicle->led_timer = 0;
     vehicle->ins_timer = 0;
@@ -79,8 +71,7 @@ void vehicle_init(vehicle_t *vehicle) {
 
     icm45686_init(&vehicle->imu, &vehicle->icm45686_spi);
 
-    vehicle->flash.context = vehicle;
-    vehicle->flash.spi_transfer = w25q128jv_spi_transfer;
+    w25q128jv_init(&vehicle->flash, &vehicle->w25q128jv_spi);
 
     ins_init(&vehicle->ins);
 
