@@ -6,6 +6,8 @@
 
 typedef struct {
     gpio_t led;
+    gpio_t tim1_ch4;
+    gpio_t tim3_ch2;
     gpio_t uart1_tx;
     gpio_t uart1_rx;
     gpio_t spi1_cs;

@@ -7,6 +7,7 @@
 #include "math/quaternion.h"
 #include "hal/clock.h"
 #include "hal/gpio.h"
+#include "hal/timer.h"
 #include "hal/uart.h"
 #include "hal/spi.h"
 #include "ins.h"
@@ -28,6 +29,8 @@ typedef struct {
     spi_t icm45686_spi;
     spi_t w25q128jv_spi;
     uart_t debug_uart;
+    timer_t servo_y;
+    timer_t servo_z;
     bool led_on;
     uint32_t led_timer;
     uint32_t ins_timer;

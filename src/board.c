@@ -7,6 +7,18 @@ board_pins_t board_pins = {
         .af = 0,
         .mode = GPIO_MODE_OUTPUT
     },
+    .tim1_ch4 = {
+        .gpio_reg = GPIOA,
+        .pin = 11,
+        .af = 2,
+        .mode = GPIO_MODE_AF
+    },
+    .tim3_ch2 = {
+        .gpio_reg = GPIOA,
+        .pin = 7,
+        .af = 1,
+        .mode = GPIO_MODE_AF
+    },
     .uart1_tx = {
         .gpio_reg = GPIOB,
         .pin = 6,
