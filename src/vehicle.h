@@ -11,11 +11,13 @@
 #include "hal/spi.h"
 #include "ins.h"
 #include "logger.h"
+#include "control.h"
 #include "board.h"
 
 typedef struct {
     ins_t ins;
     logger_t logger;
+    control_t control;
     spi_t imu_spi;
     spi_t flash_spi;
     timer_t servo_y;

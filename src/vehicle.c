@@ -17,6 +17,7 @@ void vehicle_init(vehicle_t *vehicle, uart_t *debug_uart) {
 
     ins_init(&vehicle->ins, &vehicle->imu_spi);
     logger_init(&vehicle->logger, &vehicle->flash_spi, vehicle->debug_uart);
+    control_init(&vehicle->control, &vehicle->servo_y, &vehicle->servo_z);
 }
 
 void vehicle_update(vehicle_t *vehicle) {
@@ -27,6 +28,7 @@ void vehicle_update(vehicle_t *vehicle) {
 
     if (timer_expired(&vehicle->ins_timer, 10)) {
         ins_update(&vehicle->ins, 0.01f);
+        control_update(&vehicle->control, &vehicle->ins);
         logger_write(&vehicle->logger, &vehicle->ins);
         vehicle_print_state(vehicle);
     }
