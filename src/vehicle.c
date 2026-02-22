@@ -40,14 +40,12 @@ void vehicle_update_calibrate(vehicle_t *vehicle) {
     }
 }
 
-void vehicle_update_retreive(vehicle_t *vehicle) {
+void vehicle_retrieve(vehicle_t *vehicle) {
     logger_read_output(&vehicle->logger);
-    for (;;) spin(1);
 }
 
-void vehicle_update_erase(vehicle_t *vehicle) {
+void vehicle_erase(vehicle_t *vehicle) {
     logger_erase_output(&vehicle->logger);
-    for (;;) spin(1);
 }
 
 boot_mode_t vehicle_run_cli(vehicle_t *vehicle) {
@@ -89,7 +87,7 @@ boot_mode_t vehicle_run_cli(vehicle_t *vehicle) {
             } else if (strcmp(cmd_buf, "5") == 0) {
                 uart_write_buf(&vehicle->debug_uart, "Retrieve Selected\r\n",
                     19);
-                return BOOT_MODE_RETREIVE;
+                return BOOT_MODE_RETRIEVE;
             } else if (strcmp(cmd_buf, "9") == 0) {
                 uart_write_buf(&vehicle->debug_uart, "Erase Selected\r\n", 16);
                 return BOOT_MODE_ERASE;

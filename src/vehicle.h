@@ -16,7 +16,7 @@
 typedef enum {
     BOOT_MODE_FLIGHT,
     BOOT_MODE_CALIBRATE,
-    BOOT_MODE_RETREIVE,
+    BOOT_MODE_RETRIEVE,
     BOOT_MODE_ERASE
 } boot_mode_t;
 
@@ -37,8 +37,8 @@ void vehicle_init(vehicle_t *vehicle);
 
 void vehicle_update_flight(vehicle_t *vehicle);
 void vehicle_update_calibrate(vehicle_t *vehicle);
-void vehicle_update_retreive(vehicle_t *vehicle);
-void vehicle_update_erase(vehicle_t *vehicle);
+void vehicle_retrieve(vehicle_t *vehicle);
+void vehicle_erase(vehicle_t *vehicle);
 
 boot_mode_t vehicle_run_cli(vehicle_t *vehicle);
 void vehicle_print_state(vehicle_t *vehicle);
