@@ -18,8 +18,8 @@ __attribute__((naked, noreturn)) void _reset(void) {
     for (;;) (void) 0; // Infinite loop in the case if main() returns
 }
 
-extern void _systick_handler(void); // Defined in hal.c
-extern void _estack(void); // Defined in link.ld
+extern void _systick_handler(void); // Defined in hal
+extern void _estack(void); // Defined in linker
 
 __attribute__((section(".vectors"))) void (*const tab[16 + 32])(void) = {
     _estack,
