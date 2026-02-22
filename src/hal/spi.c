@@ -2,11 +2,11 @@
 
 void spi_init(spi_t *spi) {
     gpio_init(&spi->cs);
-    gpio_write(&spi->cs, true);
-
     gpio_init(&spi->miso);
     gpio_init(&spi->mosi);
     gpio_init(&spi->sck);
+
+    gpio_write(&spi->cs, true);
 
     if (spi->spi_reg == SPI1) {
         RCC->APBENR2 |= 1UL << 12;
