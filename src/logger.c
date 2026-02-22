@@ -6,6 +6,7 @@ void logger_init(logger_t *logger, spi_t *spi, uart_t *debug_uart) {
     logger->flash_spi = spi;
     logger->debug_uart = debug_uart;
     logger->current_page = 0;
+    logger->counter = 0;
 
     ring_buffer_setup(&logger->ring_buffer, data_buffer, LOGGER_RING_BUF_SIZE);
 
@@ -21,7 +22,18 @@ void logger_init(logger_t *logger, spi_t *spi, uart_t *debug_uart) {
  * Write may take some time to complete at the hardware level, so do not call
  * again before the last write is complete
  */
-void logger_write(logger_t *logger, message_t message) {
+void logger_write(logger_t *logger, ins_t *ins) {
+    message_t message = {
+        .counter = logger->counter++,
+        .time = get_time(),
+        .gx = ins->gyro[0],
+        .gy = ins->gyro[1],
+        .gz = ins->gyro[2],
+        .ax = ins->accel[0],
+        .ay = ins->accel[1],
+        .az = ins->accel[2]
+    };
+
     // Add message to buffer
     uint8_t byte_array[sizeof(message)];
     memcpy(&byte_array, &message, sizeof(message));

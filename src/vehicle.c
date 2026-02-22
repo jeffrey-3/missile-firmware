@@ -3,7 +3,6 @@
 void vehicle_init(vehicle_t *vehicle) {
     vehicle->led_timer = 0;
     vehicle->ins_timer = 0;
-    vehicle->counter = 0;
     vehicle->led_on = false;
 
     systick_init();
@@ -29,20 +28,7 @@ void vehicle_update_flight(vehicle_t *vehicle) {
 
     if (timer_expired(&vehicle->ins_timer, 10)) {
         ins_update(&vehicle->ins, 0.01f);
-
-        vehicle->counter++;
-        message_t message = {
-            .counter = vehicle->counter,
-            .time = get_time(),
-            .gx = vehicle->ins.gyro[0],
-            .gy = vehicle->ins.gyro[1],
-            .gz = vehicle->ins.gyro[2],
-            .ax = vehicle->ins.accel[0],
-            .ay = vehicle->ins.accel[1],
-            .az = vehicle->ins.accel[2]
-        };
-        logger_write(&vehicle->logger, message);
-
+        logger_write(&vehicle->logger, &vehicle->ins);
         vehicle_print_state(vehicle);
     }
 }
