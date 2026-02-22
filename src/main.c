@@ -78,9 +78,7 @@ int main(void) {
             }
             break;
         case BOOT_MODE_CALIBRATE:
-            for (;;) {
-                vehicle_update_calibrate(&vehicle);
-            }
+            vehicle_calibrate(&vehicle);
             break;
         case BOOT_MODE_RETRIEVE:
             vehicle_retrieve(&vehicle);

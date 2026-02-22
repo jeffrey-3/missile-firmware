@@ -28,7 +28,7 @@ typedef struct {
 
 void vehicle_init(vehicle_t *vehicle, uart_t *debug_uart);
 void vehicle_update_flight(vehicle_t *vehicle);
-void vehicle_update_calibrate(vehicle_t *vehicle);
+void vehicle_calibrate(vehicle_t *vehicle);
 void vehicle_retrieve(vehicle_t *vehicle);
 void vehicle_erase(vehicle_t *vehicle);
 void vehicle_print_state(vehicle_t *vehicle);
