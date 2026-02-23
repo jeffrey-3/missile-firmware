@@ -22,17 +22,17 @@ SOURCES = src/startup.c \
           src/vehicle.c \
           src/util/ring_buffer.c
 
-firmware: $(SOURCES) src/main.c
+build-firmware: $(SOURCES) src/main.c
 	mkdir -p build/$@
 	arm-none-eabi-gcc $^ $(CFLAGS) $(LDFLAGS) -Wl,-Map=build/$@/$@.map -o build/$@/$@.elf
 	arm-none-eabi-objcopy -O binary build/$@/$@.elf build/$@/$@.bin
 
-integration: $(SOURCES) test/integration/main.c
+build-integration: $(SOURCES) test/integration/main.c
 	mkdir -p build/$@
 	arm-none-eabi-gcc $^ $(CFLAGS) $(LDFLAGS) -Wl,-Map=build/$@/$@.map -o build/$@/$@.elf
 	arm-none-eabi-objcopy -O binary build/$@/$@.elf build/$@/$@.bin
 
-unit: $(SOURCES) test/unit/main.c
+build-unit: $(SOURCES) test/unit/main.c
 	mkdir -p build/$@
 	arm-none-eabi-gcc $^ $(CFLAGS) $(LDFLAGS) -Wl,-Map=build/$@/$@.map -o build/$@/$@.elf
 	arm-none-eabi-objcopy -O binary build/$@/$@.elf build/$@/$@.bin
@@ -46,8 +46,11 @@ debug-integration:
 debug-unit:
 	gdb-multiarch build/unit/unit.elf
 
-flash:
+flash-firmware:
 	st-flash --reset write build/firmware/firmware.bin 0x8000000
+
+flash-integration:
+	st-flash --reset write build/integration/integration.bin 0x8000000
 
 clean:
 	rm -rf build
