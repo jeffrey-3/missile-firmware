@@ -3,9 +3,8 @@ CFLAGS  ?=  -W -Wall -Wextra -Werror -Wundef -Wshadow -Wdouble-promotion \
             -g3 -Os -ffunction-sections -fdata-sections -I. \
             -mcpu=cortex-m0plus -mthumb -mfloat-abi=soft $(EXTRA_CFLAGS)
 LDFLAGS ?= -Tlink.ld -nostartfiles -nostdlib --specs nano.specs \
-           -u _printf_float -lm -lc -lgcc -Wl,--gc-sections -Wl,-Map=$@.map
-SOURCES = src/main.c \
-          src/startup.c \
+           -u _printf_float -lm -lc -lgcc -Wl,--gc-sections
+SOURCES = src/startup.c \
           src/syscalls.c \
           src/hal/clock.c \
           src/hal/gpio.c \
@@ -23,22 +22,32 @@ SOURCES = src/main.c \
           src/vehicle.c \
           src/util/ring_buffer.c
 
-build: build/firmware.elf
+firmware: $(SOURCES) src/main.c
+	mkdir -p build/$@
+	arm-none-eabi-gcc $^ $(CFLAGS) $(LDFLAGS) -Wl,-Map=build/$@/$@.map -o build/$@/$@.elf
+	arm-none-eabi-objcopy -O binary build/$@/$@.elf build/$@/$@.bin
 
-create-build:
-	mkdir -p build
+integration: $(SOURCES) test/integration/main.c
+	mkdir -p build/$@
+	arm-none-eabi-gcc $^ $(CFLAGS) $(LDFLAGS) -Wl,-Map=build/$@/$@.map -o build/$@/$@.elf
+	arm-none-eabi-objcopy -O binary build/$@/$@.elf build/$@/$@.bin
 
-build/firmware.elf: $(SOURCES) | create-build
-	arm-none-eabi-gcc $(SOURCES) $(CFLAGS) $(LDFLAGS) -o $@
+unit: $(SOURCES) test/unit/main.c
+	mkdir -p build/$@
+	arm-none-eabi-gcc $^ $(CFLAGS) $(LDFLAGS) -Wl,-Map=build/$@/$@.map -o build/$@/$@.elf
+	arm-none-eabi-objcopy -O binary build/$@/$@.elf build/$@/$@.bin
 
-build/firmware.bin: build/firmware.elf
-	arm-none-eabi-objcopy -O binary $< $@
+debug-firmware:
+	gdb-multiarch build/firmware/firmware.elf
 
-debug:
-	gdb-multiarch build/firmware.elf
+debug-integration:
+	gdb-multiarch build/integration/integration.elf
 
-flash: build/firmware.bin
-	st-flash --reset write $< 0x8000000
+debug-unit:
+	gdb-multiarch build/unit/unit.elf
+
+flash:
+	st-flash --reset write build/firmware/firmware.bin 0x8000000
 
 clean:
 	rm -rf build
