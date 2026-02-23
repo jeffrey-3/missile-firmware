@@ -52,6 +52,9 @@ flash-firmware:
 flash-integration:
 	st-flash --reset write build/integration/integration.bin 0x8000000
 
+flash-unit:
+	st-flash --reset write build/unit/unit.bin 0x8000000
+
 clean:
 	rm -rf build
 
