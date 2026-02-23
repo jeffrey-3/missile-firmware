@@ -11,6 +11,8 @@ int main(void) {
         .mode = GPIO_MODE_OUTPUT
     };
 
+    gpio_init(&led);
+
     gpio_t tim1_ch4 = {
         .gpio_reg = GPIOA,
         .pin = 11,
