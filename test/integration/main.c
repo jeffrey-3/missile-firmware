@@ -31,7 +31,6 @@ int main(void) {
         }
 
         timer_set_duty(&servo, 0.5);
-        delay(1000);
     }
 
     return 0;
