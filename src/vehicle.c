@@ -44,14 +44,6 @@ void vehicle_calibrate(vehicle_t *vehicle) {
     }
 }
 
-void vehicle_retrieve(vehicle_t *vehicle) {
-    logger_read_output(&vehicle->logger);
-}
-
-void vehicle_erase(vehicle_t *vehicle) {
-    logger_erase_output(&vehicle->logger);
-}
-
 void vehicle_print_state(vehicle_t *vehicle) {
     float roll;
     float pitch;

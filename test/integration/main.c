@@ -3,19 +3,19 @@
 #include "../../src/hal/timer.h"
 #include "../../src/hal/clock.h"
 #include "../../src/hal/uart.h"
+#include "../../src/hal/spi.h"
+#include "../../src/logger.h"
 #include "../../src/board.h"
 
 void test_led_blink(void) {
     gpio_init(&board_pins.led);
 
     bool led_on = false;
-    uint32_t led_timer = 0;
 
     for (;;) {
-        if (timer_expired(&led_timer, 500)) {
-            gpio_write(&board_pins.led, led_on);
-            led_on = !led_on;
-        }
+        gpio_write(&board_pins.led, led_on);
+        led_on = !led_on;
+        delay(200);
     }
 }
 
@@ -28,22 +28,53 @@ void test_servo(void) {
     timer_init(&servo_z, TIM1, &board_pins.tim1_ch4, 4);
 
     bool led_on = false;
-    uint32_t led_timer = 0;
 
     for (;;) {
-        if (timer_expired(&led_timer, 500)) {
-            gpio_write(&board_pins.led, led_on);
-            led_on = !led_on;
+        gpio_write(&board_pins.led, led_on);
+        led_on = !led_on;
 
-            if (led_on) {
-                timer_set_duty(&servo_y, 0.7f);
-                timer_set_duty(&servo_z, 0.7f);
-            } else {
-                timer_set_duty(&servo_y, 0.3f);
-                timer_set_duty(&servo_z, 0.3f);
-            }
+        if (led_on) {
+            timer_set_duty(&servo_y, 0.7f);
+            delay(200);
+            timer_set_duty(&servo_y, 0.3f);
+            delay(200);
+            timer_set_duty(&servo_y, 0.5f);
+            delay(200);
+        } else {
+            timer_set_duty(&servo_z, 0.7f);
+            delay(200);
+            timer_set_duty(&servo_z, 0.3f);
+            delay(200);
+            timer_set_duty(&servo_z, 0.5f);
+            delay(200);
         }
     }
+}
+
+void test_erase_flash(void) {
+    spi_t spi;
+    uart_t uart;
+    logger_t logger;
+
+    uart_init(&uart, UART1, &board_pins.uart1_tx, &board_pins.uart1_rx, 115200);
+    spi_init(&spi, SPI2, &board_pins.spi2_cs, &board_pins.spi2_miso,
+        &board_pins.spi2_mosi, &board_pins.spi2_sck);
+    logger_init(&logger, &spi, &uart);
+
+    logger_erase_output(&logger);
+}
+
+void test_read_flash(void) {
+    spi_t spi;
+    uart_t uart;
+    logger_t logger;
+
+    uart_init(&uart, UART1, &board_pins.uart1_tx, &board_pins.uart1_rx, 115200);
+    spi_init(&spi, SPI2, &board_pins.spi2_cs, &board_pins.spi2_miso,
+        &board_pins.spi2_mosi, &board_pins.spi2_sck);
+    logger_init(&logger, &spi, &uart);
+
+    logger_read_output(&logger);
 }
 
 typedef void (*test_func_t)(void);
@@ -56,7 +87,9 @@ typedef struct {
 
 static const test_entry_t test_entries[] = {
     {'1', "Blink LED", test_led_blink},
-    {'a', "Servo Test", test_servo}
+    {'2', "Servo Test", test_servo},
+    {'*', "Erase Flash", test_erase_flash},
+    {'_', "Read Flash", test_read_flash}
 };
 
 static const int num_tests = sizeof(test_entries) / sizeof(test_entries[0]);
