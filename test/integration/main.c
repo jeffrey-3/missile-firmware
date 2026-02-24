@@ -51,6 +51,10 @@ void test_servo(void) {
     }
 }
 
+void test_calibrate(void) {
+    return;
+}
+
 void test_erase_flash(void) {
     spi_t spi;
     uart_t uart;
@@ -86,6 +90,7 @@ typedef struct {
 static const test_entry_t test_entries[] = {
     {'1', "Blink LED", test_led_blink},
     {'2', "Servo Test", test_servo},
+    {'3', "Calibrate IMU", test_calibrate},
     {'*', "Erase Flash", test_erase_flash},
     {'#', "Read Flash", test_read_flash}
 };

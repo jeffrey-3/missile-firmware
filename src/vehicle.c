@@ -33,16 +33,6 @@ void vehicle_update(vehicle_t *vehicle) {
     }
 }
 
-void vehicle_calibrate(vehicle_t *vehicle) {
-    bool complete = false;
-    while (!complete) {
-        if (timer_expired(&vehicle->led_timer, 500)) {
-            gpio_write(&board_pins.led, vehicle->led_on);
-            vehicle->led_on = !vehicle->led_on;
-        }
-    }
-}
-
 void vehicle_print_state(vehicle_t *vehicle) {
     float roll;
     float pitch;
