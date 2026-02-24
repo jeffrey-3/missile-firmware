@@ -24,26 +24,5 @@ void vehicle_update(vehicle_t *vehicle) {
     if (timer_expired(&vehicle->ins_timer, 10)) {
         ins_update(&vehicle->ins, 0.01f);
         logger_write(&vehicle->logger, &vehicle->ins);
-        vehicle_print_state(vehicle);
     }
-}
-
-void vehicle_print_state(vehicle_t *vehicle) {
-    float roll;
-    float pitch;
-    float yaw;
-    char uart_buf[64];
-
-    quat_to_euler(vehicle->ins.q, &roll, &pitch, &yaw);
-
-    roll *= RAD2DEG;
-    pitch *= RAD2DEG;
-    yaw *= RAD2DEG;
-
-    snprintf(uart_buf, sizeof(uart_buf),
-        "%.0f,%.0f,%.0f,%.1f,%.1f,%.1f\r\n",
-        (double)roll, (double)pitch, (double)yaw,
-        (double)vehicle->ins.vel.x, (double)vehicle->ins.vel.y,
-        (double)vehicle->ins.vel.z);
-    uart_write_buf(vehicle->debug_uart, uart_buf, strlen(uart_buf));
 }

@@ -27,6 +27,5 @@ typedef struct {
 
 void vehicle_init(vehicle_t *vehicle, uart_t *debug_uart);
 void vehicle_update(vehicle_t *vehicle);
-void vehicle_print_state(vehicle_t *vehicle);
 
 #endif // VEHICLE_H
