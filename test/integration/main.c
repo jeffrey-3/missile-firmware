@@ -87,7 +87,7 @@ static const test_entry_t test_entries[] = {
     {'1', "Blink LED", test_led_blink},
     {'2', "Servo Test", test_servo},
     {'*', "Erase Flash", test_erase_flash},
-    {'_', "Read Flash", test_read_flash}
+    {'#', "Read Flash", test_read_flash}
 };
 
 static const int num_tests = sizeof(test_entries) / sizeof(test_entries[0]);
