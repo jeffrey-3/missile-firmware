@@ -7,6 +7,6 @@ jobs:
         - uses: actions/checkout@v3
         - run: sudo apt-get update
         - run: sudo apt -y install gcc-arm-none-eabi make
-        - run: make build-firmware
-        - run: make build-integration
-        - run: make build-unit
+        - run: make firmware
+        - run: make integration
+        - run: make unit

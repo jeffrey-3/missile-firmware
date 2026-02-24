@@ -22,17 +22,17 @@ SOURCES = src/startup.c \
           src/vehicle.c \
           src/util/ring_buffer.c
 
-build-firmware: $(SOURCES) src/main.c
+firmware: $(SOURCES) src/main.c
 	mkdir -p build/$@
 	arm-none-eabi-gcc $^ $(CFLAGS) $(LDFLAGS) -Wl,-Map=build/$@/$@.map -o build/$@/$@.elf
 	arm-none-eabi-objcopy -O binary build/$@/$@.elf build/$@/$@.bin
 
-build-integration: $(SOURCES) test/integration/main.c
+integration: $(SOURCES) test/integration/main.c
 	mkdir -p build/$@
 	arm-none-eabi-gcc $^ $(CFLAGS) $(LDFLAGS) -Wl,-Map=build/$@/$@.map -o build/$@/$@.elf
 	arm-none-eabi-objcopy -O binary build/$@/$@.elf build/$@/$@.bin
 
-build-unit: $(SOURCES) test/unit/main.c
+unit: $(SOURCES) test/unit/main.c
 	mkdir -p build/$@
 	arm-none-eabi-gcc $^ $(CFLAGS) $(LDFLAGS) -Wl,-Map=build/$@/$@.map -o build/$@/$@.elf
 	arm-none-eabi-objcopy -O binary build/$@/$@.elf build/$@/$@.bin

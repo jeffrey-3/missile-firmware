@@ -12,6 +12,9 @@ void timer_init(timer_t *timer, struct tim_reg *tim_reg, gpio_t *gpio,
     // Enable peripheral clock
     if (timer->tim_reg == TIM1) {
         RCC->APBENR2 |= 1UL << 11;
+
+        // Enable main output
+        timer->tim_reg->BDTR |= 1UL << 15;
     } else if (timer->tim_reg == TIM3) {
         RCC->APBENR1 |= 1UL << 1;
     }
