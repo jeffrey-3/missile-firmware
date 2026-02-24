@@ -6,7 +6,6 @@ void vehicle_init(vehicle_t *vehicle, uart_t *debug_uart) {
     vehicle->ins_timer = 0;
     vehicle->led_on = false;
 
-    systick_init();
     gpio_init(&board_pins.led);
     timer_init(&vehicle->servo_y, TIM1, &board_pins.tim1_ch4, 4);
     timer_init(&vehicle->servo_z, TIM3, &board_pins.tim3_ch2, 2);
