@@ -77,12 +77,10 @@ void test_read_flash(void) {
     logger_read_output(&logger);
 }
 
-typedef void (*test_func_t)(void);
-
 typedef struct {
     char key;
     const char *name;
-    test_func_t func;
+    void (*func)(void);
 } test_entry_t;
 
 static const test_entry_t test_entries[] = {
