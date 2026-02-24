@@ -1,6 +1,6 @@
 #include <string.h>
 #include <stdio.h>
-#include "../../src/hal/timer.h"
+#include "../../src/hal/pwm.h"
 #include "../../src/hal/clock.h"
 #include "../../src/hal/uart.h"
 #include "../../src/hal/spi.h"
@@ -22,10 +22,10 @@ void test_led_blink(void) {
 void test_servo(void) {
     gpio_init(&board_pins.led);
 
-    timer_t servo_y;
-    timer_t servo_z;
-    timer_init(&servo_y, TIM3, &board_pins.tim3_ch2, 2);
-    timer_init(&servo_z, TIM1, &board_pins.tim1_ch4, 4);
+    pwm_t servo_y;
+    pwm_t servo_z;
+    pwm_init(&servo_y, TIM3, &board_pins.tim3_ch2, 2, 333.0f);
+    pwm_init(&servo_z, TIM1, &board_pins.tim1_ch4, 4, 333.0f);
 
     bool led_on = false;
 
@@ -34,18 +34,18 @@ void test_servo(void) {
         led_on = !led_on;
 
         if (led_on) {
-            timer_set_duty(&servo_y, 0.7f);
+            pwm_set_pulse(&servo_y, 2100);
             delay(200);
-            timer_set_duty(&servo_y, 0.3f);
+            pwm_set_pulse(&servo_y, 900);
             delay(200);
-            timer_set_duty(&servo_y, 0.5f);
+            pwm_set_pulse(&servo_y, 1500);
             delay(200);
         } else {
-            timer_set_duty(&servo_z, 0.7f);
+            pwm_set_pulse(&servo_z, 2100);
             delay(200);
-            timer_set_duty(&servo_z, 0.3f);
+            pwm_set_pulse(&servo_z, 900);
             delay(200);
-            timer_set_duty(&servo_z, 0.5f);
+            pwm_set_pulse(&servo_z, 1500);
             delay(200);
         }
     }
