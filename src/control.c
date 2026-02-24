@@ -6,9 +6,12 @@ void control_init(control_t *control, pwm_t *servo_y, pwm_t *servo_z) {
     control->max_pulse = 2100;
     control->min_pulse = 900;
     control->p_gain = 1.0f;
+    control->control_timer = 0;
 }
 
 void control_update(control_t *control, ins_t *ins) {
+    if (!timer_expired(&control->control_timer, 20)) return;
+
     float pitch_setpoint = 0 * DEG2RAD;
     float yaw_setpoint = 0 * DEG2RAD;
 
