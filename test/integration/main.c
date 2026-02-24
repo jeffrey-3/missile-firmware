@@ -40,10 +40,10 @@ int main(void) {
 
             if (led_on) {
                 timer_set_duty(&servo_y, 0.7f);
-                timer_set_duty(&servo_z, 0.5f);
+                timer_set_duty(&servo_z, 0.7f);
             } else {
                 timer_set_duty(&servo_y, 0.3f);
-                timer_set_duty(&servo_z, 0.6f);
+                timer_set_duty(&servo_z, 0.3f);
             }
         }
     }

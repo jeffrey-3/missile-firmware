@@ -24,7 +24,7 @@ void timer_init(timer_t *timer, struct tim_reg *tim_reg, gpio_t *gpio,
 
     if (timer->channel == 4) {
         // PWM Mode 1 (set OC4M to 0110)
-        timer->tim_reg->CCMR3 |= 3UL << 13;
+        timer->tim_reg->CCMR2 |= 3UL << 13;
 
         // Enable output on channel 4 (set CC4E to 1)
         timer->tim_reg->CCER |= 1UL << 12;
