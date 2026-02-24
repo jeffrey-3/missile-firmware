@@ -6,7 +6,6 @@ void vehicle_init(vehicle_t *vehicle, uart_t *debug_uart) {
     vehicle->ins_timer = 0;
     vehicle->led_on = false;
 
-    gpio_init(&board_pins.led);
     pwm_init(&vehicle->servo_y, TIM1, &board_pins.tim1_ch4, 4, 333.0f);
     pwm_init(&vehicle->servo_z, TIM3, &board_pins.tim3_ch2, 2, 333.0f);
     spi_init(&vehicle->imu_spi, SPI1, &board_pins.spi1_cs,
@@ -14,18 +13,15 @@ void vehicle_init(vehicle_t *vehicle, uart_t *debug_uart) {
     spi_init(&vehicle->flash_spi, SPI2, &board_pins.spi2_cs,
         &board_pins.spi2_miso, &board_pins.spi2_mosi, &board_pins.spi2_sck);
 
+    indicator_init(&vehicle->indicator, &board_pins.led);
     ins_init(&vehicle->ins, &vehicle->imu_spi);
     logger_init(&vehicle->logger, &vehicle->flash_spi, vehicle->debug_uart);
     control_init(&vehicle->control, &vehicle->servo_y, &vehicle->servo_z);
 }
 
 void vehicle_update(vehicle_t *vehicle) {
-    if (timer_expired(&vehicle->led_timer, 500)) {
-        gpio_write(&board_pins.led, vehicle->led_on);
-        vehicle->led_on = !vehicle->led_on;
-    }
-
     if (timer_expired(&vehicle->ins_timer, 10)) {
+        indicator_update_slow(&vehicle->indicator);
         ins_update(&vehicle->ins, 0.01f);
         control_update(&vehicle->control, &vehicle->ins);
         logger_write(&vehicle->logger, &vehicle->ins);

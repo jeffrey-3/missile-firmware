@@ -4,19 +4,19 @@
 #include "math/math.h"
 #include "math/quaternion.h"
 #include "hal/clock.h"
-#include "hal/gpio.h"
 #include "hal/pwm.h"
 #include "hal/uart.h"
-#include "hal/spi.h"
 #include "ins.h"
 #include "logger.h"
 #include "control.h"
+#include "indicator.h"
 #include "board.h"
 
 typedef struct {
     ins_t ins;
     logger_t logger;
     control_t control;
+    indicator_t indicator;
     spi_t imu_spi;
     spi_t flash_spi;
     pwm_t servo_y;

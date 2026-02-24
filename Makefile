@@ -11,14 +11,15 @@ SOURCES = src/startup.c \
           src/hal/uart.c \
           src/hal/spi.c \
           src/hal/pwm.c \
-          src/board.c \
           src/peripherals/icm45686.c \
           src/peripherals/w25q128jv.c \
           src/math/quaternion.c \
           src/math/math.c \
+          src/board.c \
           src/ins.c \
           src/logger.c \
           src/control.c \
+          src/indicator.c \
           src/vehicle.c \
           src/util/ring_buffer.c
 
