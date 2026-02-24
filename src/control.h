@@ -7,6 +7,12 @@
 typedef struct {
     pwm_t *servo_y;
     pwm_t *servo_z;
+    float roll;
+    float pitch;
+    float yaw;
+    uint16_t max_pulse;
+    uint16_t min_pulse;
+    float p_gain;
 } control_t;
 
 void control_init(control_t *control, pwm_t *servo_y, pwm_t *servo_z);
