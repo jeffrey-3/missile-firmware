@@ -5,14 +5,6 @@
 #include "../../src/hal/uart.h"
 #include "../../src/board.h"
 
-typedef void (*test_func_t)(void);
-
-typedef struct {
-    char key;
-    const char *name;
-    test_func_t func;
-} test_entry_t;
-
 void test_led_blink(void) {
     gpio_init(&board_pins.led);
 
@@ -54,6 +46,14 @@ void test_servo(void) {
     }
 }
 
+typedef void (*test_func_t)(void);
+
+typedef struct {
+    char key;
+    const char *name;
+    test_func_t func;
+} test_entry_t;
+
 static const test_entry_t test_entries[] = {
     {'1', "Blink LED", test_led_blink},
     {'a', "Servo Test", test_servo}
@@ -77,11 +77,14 @@ int main(void) {
 
     // Store first character as key
     while (!uart_read_ready(&uart));
+
     char key = uart_read_byte(&uart);
 
     // Check if second character is ending
     while (!uart_read_ready(&uart));
+
     char end = uart_read_byte(&uart);
+
     if (end == '\n' || end == '\r') {
         // Check if key is found in test entries
         for (uint8_t i = 0; i < num_tests; i++) {
