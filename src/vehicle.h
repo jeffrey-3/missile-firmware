@@ -22,8 +22,6 @@ typedef struct {
     pwm_t servo_y;
     pwm_t servo_z;
     uart_t *debug_uart;
-    bool led_on;
-    uint32_t led_timer;
     uint32_t ins_timer;
 } vehicle_t;
 

@@ -2,9 +2,7 @@
 
 void vehicle_init(vehicle_t *vehicle, uart_t *debug_uart) {
     vehicle->debug_uart = debug_uart;
-    vehicle->led_timer = 0;
     vehicle->ins_timer = 0;
-    vehicle->led_on = false;
 
     pwm_init(&vehicle->servo_y, TIM1, &board_pins.tim1_ch4, 4, 333.0f);
     pwm_init(&vehicle->servo_z, TIM3, &board_pins.tim3_ch2, 2, 333.0f);
