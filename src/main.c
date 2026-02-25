@@ -20,7 +20,6 @@ void init(vehicle_t *vehicle) {
 
 void update_ground(vehicle_t *vehicle) {
     indicator_update_slow(&vehicle->indicator);
-    control_update(&vehicle->control, &vehicle->ins);
     ins_update(&vehicle->ins);
     logger_update(&vehicle->logger, &vehicle->ins);
 
