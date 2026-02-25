@@ -12,12 +12,17 @@ void ins_init(ins_t *ins, spi_t *imu_spi) {
     ins->acc_sum.x = 0.0f;
     ins->acc_sum.y = 0.0f;
     ins->acc_sum.z = 0.0f;
+    ins->timer = 0;
     ins->state = INS_STATE_ALIGN;
 
     icm45686_init(&ins->imu, ins->imu_spi);
 }
 
-void ins_update(ins_t *ins, float dt) {
+void ins_update(ins_t *ins) {
+    if (!timer_expired(&ins->timer, 10)) return;
+
+    float dt = 0.01f;
+
     icm45686_read_accel(&ins->imu, ins->accel);
     icm45686_read_gyro(&ins->imu, ins->gyro);
 

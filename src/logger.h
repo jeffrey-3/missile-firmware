@@ -36,6 +36,7 @@ typedef struct {
     uint32_t current_page;
     uint32_t counter;
     ring_buffer_t ring_buffer;
+    uint32_t timer;
 } logger_t;
 
 void logger_init(logger_t *logger, spi_t *spi, uart_t *debug_uart);

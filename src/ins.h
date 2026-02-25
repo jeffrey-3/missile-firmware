@@ -29,10 +29,11 @@ typedef struct {
     uint16_t acc_count;
     float accel[3];
     float gyro[3];
+    uint32_t timer;
 } ins_t;
 
 void ins_init(ins_t *ins, spi_t *imu_spi);
-void ins_update(ins_t *ins, float dt);
+void ins_update(ins_t *ins);
 void ins_align_update(ins_t *ins);
 void ins_attitude_update(ins_t *ins, float dt);
 void ins_position_update(ins_t *ins, float dt);

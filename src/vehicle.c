@@ -2,7 +2,6 @@
 
 void vehicle_init(vehicle_t *vehicle, uart_t *debug_uart) {
     vehicle->debug_uart = debug_uart;
-    vehicle->ins_timer = 0;
 
     pwm_init(&vehicle->servo_y, TIM1, &board_pins.tim1_ch4, 4, 333.0f);
     pwm_init(&vehicle->servo_z, TIM3, &board_pins.tim3_ch2, 2, 333.0f);
@@ -20,9 +19,6 @@ void vehicle_init(vehicle_t *vehicle, uart_t *debug_uart) {
 void vehicle_update(vehicle_t *vehicle) {
     indicator_update_slow(&vehicle->indicator);
     control_update(&vehicle->control, &vehicle->ins);
-
-    if (timer_expired(&vehicle->ins_timer, 10)) {
-        ins_update(&vehicle->ins, 0.01f);
-        logger_write(&vehicle->logger, &vehicle->ins);
-    }
+    ins_update(&vehicle->ins);
+    logger_write(&vehicle->logger, &vehicle->ins);
 }

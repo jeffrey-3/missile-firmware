@@ -7,6 +7,7 @@ void logger_init(logger_t *logger, spi_t *spi, uart_t *debug_uart) {
     logger->debug_uart = debug_uart;
     logger->current_page = 0;
     logger->counter = 0;
+    logger->timer = 0;
 
     ring_buffer_setup(&logger->ring_buffer, data_buffer, LOGGER_RING_BUF_SIZE);
 
@@ -23,6 +24,8 @@ void logger_init(logger_t *logger, spi_t *spi, uart_t *debug_uart) {
  * again before the last write is complete
  */
 void logger_write(logger_t *logger, ins_t *ins) {
+    if (!timer_expired(&logger->timer, 10)) return;
+
     message_t message = {
         .counter = logger->counter++,
         .time = get_time(),

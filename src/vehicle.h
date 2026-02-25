@@ -20,7 +20,6 @@ typedef struct {
     pwm_t servo_y;
     pwm_t servo_z;
     uart_t *debug_uart;
-    uint32_t ins_timer;
 } vehicle_t;
 
 void vehicle_init(vehicle_t *vehicle, uart_t *debug_uart);
