@@ -1,6 +1,8 @@
 #include "vehicle.h"
 
 void vehicle_init(vehicle_t *vehicle) {
+    vehicle->state = STATE_GROUND;
+
     systick_init();
     pwm_init(&vehicle->servo_y, TIM1, &board_pins.tim1_ch4, 4, 333.0f);
     pwm_init(&vehicle->servo_z, TIM3, &board_pins.tim3_ch2, 2, 333.0f);
@@ -16,6 +18,13 @@ void vehicle_init(vehicle_t *vehicle) {
 }
 
 void vehicle_update(vehicle_t *vehicle) {
+    switch (vehicle->state) {
+        case STATE_GROUND:
+            break;
+        case STATE_FLIGHT:
+            break;
+    }
+
     indicator_update_slow(&vehicle->indicator);
     control_update(&vehicle->control, &vehicle->ins);
     ins_update(&vehicle->ins);

@@ -10,6 +10,11 @@
 #include "indicator.h"
 #include "board.h"
 
+typedef enum {
+    STATE_GROUND,
+    STATE_FLIGHT,
+} state_t;
+
 typedef struct {
     ins_t ins;
     logger_t logger;
@@ -19,6 +24,7 @@ typedef struct {
     spi_t flash_spi;
     pwm_t servo_y;
     pwm_t servo_z;
+    state_t state;
 } vehicle_t;
 
 void vehicle_init(vehicle_t *vehicle);

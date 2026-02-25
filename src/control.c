@@ -23,8 +23,8 @@ void control_update(control_t *control, ins_t *ins) {
     float servo_y_angle = control->p_gain * pitch_error; // Radians
     float servo_z_angle = control->p_gain * yaw_error;
 
-    float center_pulse = (float)control->max_pulse - (float)control->min_pulse /
-        2.0f;
+    float center_pulse = ((float)control->max_pulse + (float)control->min_pulse)
+        / 2.0f;
     uint16_t servo_y_pulse = (uint16_t)(center_pulse +
         ((float)control->max_pulse - (float)control->min_pulse) *
         servo_y_angle / (15.0f * DEG2RAD));
