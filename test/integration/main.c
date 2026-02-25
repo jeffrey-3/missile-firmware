@@ -7,6 +7,9 @@
 #include "../../src/logger.h"
 #include "../../src/board.h"
 
+#define LOGGER_NUM_SECTORS 10
+#define LOGGER_NUM_PAGES 30
+
 static uint8_t data_buffer[LOGGER_RING_BUF_SIZE] = {0};
 
 void test_led_blink(void) {
