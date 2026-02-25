@@ -25,6 +25,7 @@ typedef struct {
     pwm_t servo_y;
     pwm_t servo_z;
     state_t state;
+    uint16_t accel_thresh_counter;
 } vehicle_t;
 
 void vehicle_init(vehicle_t *vehicle);

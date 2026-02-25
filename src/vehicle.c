@@ -2,6 +2,7 @@
 
 void vehicle_init(vehicle_t *vehicle) {
     vehicle->state = STATE_GROUND;
+    vehicle->accel_thresh_counter = 0;
 
     systick_init();
     pwm_init(&vehicle->servo_y, TIM1, &board_pins.tim1_ch4, 4, 333.0f);
@@ -18,15 +19,25 @@ void vehicle_init(vehicle_t *vehicle) {
 }
 
 void vehicle_update(vehicle_t *vehicle) {
-    switch (vehicle->state) {
-        case STATE_GROUND:
-            break;
-        case STATE_FLIGHT:
-            break;
-    }
-
     indicator_update_slow(&vehicle->indicator);
     control_update(&vehicle->control, &vehicle->ins);
     ins_update(&vehicle->ins);
     logger_update(&vehicle->logger, &vehicle->ins);
+
+    // Detect state transitions
+    switch (vehicle->state) {
+        case STATE_GROUND:
+            if (vehicle->ins.accel[2] > 10) {
+                vehicle->accel_thresh_counter++;
+            } else {
+                vehicle->accel_thresh_counter = 0;
+            }
+
+            if (vehicle->accel_thresh_counter > 20) {
+                vehicle->state = STATE_FLIGHT;
+            }
+            break;
+        case STATE_FLIGHT:
+            break;
+    }
 }
