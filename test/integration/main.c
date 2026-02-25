@@ -76,9 +76,6 @@ void test_erase_flash(void) {
         w25q128jv_erase_sector(&flash, i);
         delay(500);
 
-        w25q128jv_write_enable(&flash);
-        delay(5);
-
         char uart_buf[100];
         snprintf(uart_buf, sizeof(uart_buf), "Erased %d out of %d\r\n",
             i + 1, LOGGER_NUM_SECTORS);
