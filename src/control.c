@@ -5,7 +5,7 @@ void control_init(control_t *control, pwm_t *servo_y, pwm_t *servo_z) {
     control->servo_z = servo_z;
     control->max_pulse = 2100;
     control->min_pulse = 900;
-    control->p_gain = 1.0f;
+    control->p_gain = 0.2f;
     control->control_timer = 0;
 }
 
@@ -23,14 +23,14 @@ void control_update(control_t *control, ins_t *ins) {
     float servo_y_angle = control->p_gain * pitch_error; // Radians
     float servo_z_angle = control->p_gain * yaw_error;
 
-    float center_pulse = (float)(control->max_pulse - control->min_pulse) /
+    float center_pulse = (float)control->max_pulse - (float)control->min_pulse /
         2.0f;
     uint16_t servo_y_pulse = (uint16_t)(center_pulse +
-        (float)(control->max_pulse - control->min_pulse) *
-        servo_y_angle / (90.0f * DEG2RAD));
+        ((float)control->max_pulse - (float)control->min_pulse) *
+        servo_y_angle / (15.0f * DEG2RAD));
     uint16_t servo_z_pulse = (uint16_t)(center_pulse +
-        (float)(control->max_pulse - control->min_pulse) *
-        servo_z_angle / (90.0f * DEG2RAD));
+        ((float)control->max_pulse - (float)control->min_pulse) *
+        servo_z_angle / (15.0f * DEG2RAD));
 
     servo_y_pulse = clamp_u16(servo_y_pulse, control->min_pulse,
         control->max_pulse);
