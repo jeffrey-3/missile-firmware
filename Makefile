@@ -23,6 +23,8 @@ SOURCES = src/startup.c \
           src/vehicle.c \
           src/util/ring_buffer.c
 
+all: firmware integration unit
+
 firmware: $(SOURCES) src/main.c
 	mkdir -p build/$@
 	arm-none-eabi-gcc $^ $(CFLAGS) $(LDFLAGS) -Wl,-Map=build/$@/$@.map -o build/$@/$@.elf
