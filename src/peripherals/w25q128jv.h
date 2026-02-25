@@ -20,6 +20,7 @@ typedef struct {
 void w25q128jv_init(w25q128jv_t *device, spi_t *spi);
 uint8_t w25q128jv_read_id(w25q128jv_t *device);
 bool w25q128jv_check_busy(w25q128jv_t *device);
+bool w25q128jv_check_write_enabled(w25q128jv_t *device);
 void w25q128jv_read(w25q128jv_t *device, uint32_t start_page, uint8_t offset,
     uint32_t size, uint8_t *data);
 void w25q128jv_write_enable(w25q128jv_t *device);

@@ -39,18 +39,24 @@ void logger_update(logger_t *logger, ins_t *ins) {
     memcpy(&byte_array, &message, sizeof(message));
     ring_buffer_write_arr(&logger->ring_buffer, byte_array, sizeof(message));
 
-    // Check if buffer is ready to flush (length of buffer more than one page)
-    if (ring_buffer_count(&logger->ring_buffer) > LOGGER_PAGE_SIZE) {
-        // Get one page of bytes from ring buffer
-        uint8_t write_buf[LOGGER_PAGE_SIZE];
-        ring_buffer_read_arr(&logger->ring_buffer, write_buf, LOGGER_PAGE_SIZE);
+    if (!w25q128jv_check_busy(&logger->flash)) {
+        if (w25q128jv_check_write_enabled(&logger->flash)) {
+            // Check if buffer contains more than one page
+            if (ring_buffer_count(&logger->ring_buffer) > LOGGER_PAGE_SIZE) {
+                // Get one page of bytes from ring buffer
+                uint8_t write_buf[LOGGER_PAGE_SIZE];
+                ring_buffer_read_arr(&logger->ring_buffer, write_buf,
+                    LOGGER_PAGE_SIZE);
 
-        // Write the data
-        w25q128jv_write_page(&logger->flash, logger->current_page, 0,
-            LOGGER_PAGE_SIZE, write_buf);
-        logger->current_page++;
-    } else {
-        // After every write, the flash chip disables write, so must re-enable
-        w25q128jv_write_enable(&logger->flash);
+                // Write one page
+                w25q128jv_write_page(&logger->flash, logger->current_page, 0,
+                    LOGGER_PAGE_SIZE, write_buf);
+                logger->current_page++;
+            }
+        } else {
+            // After every write, chip disables write, so must re-enable
+            w25q128jv_write_enable(&logger->flash);
+        }
     }
+
 }
