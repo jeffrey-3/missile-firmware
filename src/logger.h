@@ -30,7 +30,6 @@ typedef struct __attribute__((packed)) {
 } message_t;
 
 typedef struct {
-    uart_t *debug_uart;
     spi_t *flash_spi;
     w25q128jv_t flash;
     uint32_t current_page;
@@ -39,9 +38,7 @@ typedef struct {
     uint32_t timer;
 } logger_t;
 
-void logger_init(logger_t *logger, spi_t *spi, uart_t *debug_uart);
-void logger_write(logger_t *logger, ins_t *ins);
-void logger_read(logger_t *logger, uint32_t page, message_t *messages);
-void logger_read_output(logger_t *logger);
+void logger_init(logger_t *logger, spi_t *spi);
+void logger_update(logger_t *logger, ins_t *ins);
 
 #endif // LOGGER_H

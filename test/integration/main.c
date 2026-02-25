@@ -83,21 +83,62 @@ void test_erase_flash(void) {
         uart_write_buf(&uart, uart_buf, strlen(uart_buf));
     }
 
-    char uart_buf[100] = "Finished erase. Power cycle now.\r\n";
+    char uart_buf[100] = "Finished\r\n";
     uart_write_buf(&uart, uart_buf, strlen(uart_buf));
 }
 
 void test_read_flash(void) {
     spi_t spi;
     uart_t uart;
-    logger_t logger;
+    w25q128jv_t flash;
 
     uart_init(&uart, UART1, &board_pins.uart1_tx, &board_pins.uart1_rx, 115200);
     spi_init(&spi, SPI2, &board_pins.spi2_cs, &board_pins.spi2_miso,
         &board_pins.spi2_mosi, &board_pins.spi2_sck);
-    logger_init(&logger, &spi, &uart);
+    w25q128jv_init(&flash, &spi);
 
-    logger_read_output(&logger);
+    // Read each page one by one
+    for (uint32_t i = 0; i < LOGGER_NUM_PAGES; i++) {
+        char buf[100];
+        snprintf(buf, sizeof(buf), "Reading page %ld out of %d\r\n", i + 1,
+            LOGGER_NUM_PAGES);
+        uart_write_buf(&uart, buf, strlen(buf));
+
+        message_t messages[LOGGER_MSG_PER_PAGE];
+
+        // Read this page and get array of message structs
+        w25q128jv_write_disable(&flash);
+        delay(LOGGER_WRITE_EN_TIME);
+
+        uint32_t size = LOGGER_MSG_PER_PAGE * sizeof(message_t);
+        uint8_t data[size];
+        w25q128jv_read(&flash, i, 0,
+            LOGGER_MSG_PER_PAGE * sizeof(message_t), data);
+
+        for (uint32_t j = 0; j < LOGGER_MSG_PER_PAGE; j++) {
+            // For each message in page, copy to array of messages
+            memcpy(&messages[j], &data[j * sizeof(message_t)],
+                sizeof(message_t));
+        }
+
+        w25q128jv_write_enable(&flash);
+        delay(LOGGER_WRITE_EN_TIME);
+
+        // Output values in message
+        for (uint8_t j = 0; j < LOGGER_MSG_PER_PAGE; j++) {
+            message_t message = messages[j];
+
+            char uart_buf[64];
+            snprintf(uart_buf, sizeof(uart_buf),
+                "%ld,%ld,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\r\n",
+                message.counter, message.time, (double)message.gx,
+                (double)message.gy, (double)message.gz, (double)message.ax,
+                (double)message.ay, (double)message.az);
+            uart_write_buf(&uart, uart_buf, strlen(uart_buf));
+        }
+    }
+
+    uart_write_buf(&uart, "Finished\r\n", strlen("Finished\r\n"));
 }
 
 typedef struct {

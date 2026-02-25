@@ -19,10 +19,9 @@ typedef struct {
     spi_t flash_spi;
     pwm_t servo_y;
     pwm_t servo_z;
-    uart_t *debug_uart;
 } vehicle_t;
 
-void vehicle_init(vehicle_t *vehicle, uart_t *debug_uart);
+void vehicle_init(vehicle_t *vehicle);
 void vehicle_update(vehicle_t *vehicle);
 
 #endif // VEHICLE_H
