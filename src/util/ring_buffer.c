@@ -26,6 +26,12 @@ bool ring_buffer_read(ring_buffer_t* rb, uint8_t* byte) {
     return true;
 }
 
+void ring_buffer_read_arr(ring_buffer_t* rb, uint8_t* arr, uint32_t size) {
+    for (uint32_t i = 0; i < size; i++) {
+        ring_buffer_read(rb, &arr[i]);
+    }
+}
+
 bool ring_buffer_write(ring_buffer_t* rb, uint8_t byte) {
     uint32_t local_write_index = rb->write_index;
     uint32_t local_read_index = rb->read_index;
@@ -39,6 +45,12 @@ bool ring_buffer_write(ring_buffer_t* rb, uint8_t byte) {
     rb->buffer[local_write_index] = byte;
     rb->write_index = next_write_index;
     return true;
+}
+
+void ring_buffer_write_arr(ring_buffer_t* rb, uint8_t *arr, uint32_t size) {
+    for (uint32_t i = 0; i < size; i++) {
+        ring_buffer_write(rb, arr[i]);
+    }
 }
 
 uint32_t ring_buffer_count(ring_buffer_t* rb) {

@@ -18,6 +18,13 @@ uint8_t w25q128jv_read_id(w25q128jv_t *device) {
     return rx_buf[4];
 }
 
+bool w25q128jv_check_busy(w25q128jv_t *device) {
+    uint8_t tx_buf[2] = {W25Q128JV_READ_STATUS_1, 0x00};
+    uint8_t rx_buf[2];
+    w25q128jv_read_write(device, tx_buf, rx_buf, 2);
+    return rx_buf[1] & 0x01;
+}
+
 /*
  * @brief Read data from the memory
  *

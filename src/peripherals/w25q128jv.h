@@ -11,6 +11,7 @@
 #define W25Q128JV_WRITE_ENABLE 0x06
 #define W25Q128JV_WRITE_DISABLE 0x04
 #define W25Q128JV_PAGE_PROGRAM 0x02
+#define W25Q128JV_READ_STATUS_1 0x05
 
 typedef struct {
     spi_t *spi;
@@ -18,6 +19,7 @@ typedef struct {
 
 void w25q128jv_init(w25q128jv_t *device, spi_t *spi);
 uint8_t w25q128jv_read_id(w25q128jv_t *device);
+bool w25q128jv_check_busy(w25q128jv_t *device);
 void w25q128jv_read(w25q128jv_t *device, uint32_t start_page, uint8_t offset,
     uint32_t size, uint8_t *data);
 void w25q128jv_write_enable(w25q128jv_t *device);
