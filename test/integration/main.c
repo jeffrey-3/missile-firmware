@@ -58,14 +58,33 @@ void test_calibrate(void) {
 void test_erase_flash(void) {
     spi_t spi;
     uart_t uart;
-    logger_t logger;
+    w25q128jv_t flash;
 
     uart_init(&uart, UART1, &board_pins.uart1_tx, &board_pins.uart1_rx, 115200);
     spi_init(&spi, SPI2, &board_pins.spi2_cs, &board_pins.spi2_miso,
         &board_pins.spi2_mosi, &board_pins.spi2_sck);
-    logger_init(&logger, &spi, &uart);
+    w25q128jv_init(&flash, &spi);
 
-    logger_erase_output(&logger);
+    // Erase every sector one by one
+    for (uint16_t i = 0; i < LOGGER_NUM_SECTORS; i++) {
+        // After every erase, the flash chip disables write, so must re-enable
+        w25q128jv_write_enable(&flash);
+        delay(LOGGER_WRITE_EN_TIME);
+
+        w25q128jv_erase_sector(&flash, i);
+        delay(LOGGER_SECTOR_ERASE_TIME);
+
+        w25q128jv_write_enable(&flash);
+        delay(LOGGER_WRITE_EN_TIME);
+
+        char uart_buf[100];
+        snprintf(uart_buf, sizeof(uart_buf), "Erased %d out of %d\r\n",
+            i + 1, LOGGER_NUM_SECTORS);
+        uart_write_buf(&uart, uart_buf, strlen(uart_buf));
+    }
+
+    char uart_buf[100] = "Finished erase. Power cycle now.\r\n";
+    uart_write_buf(&uart, uart_buf, strlen(uart_buf));
 }
 
 void test_read_flash(void) {

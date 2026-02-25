@@ -66,21 +66,6 @@ void logger_write(logger_t *logger, ins_t *ins) {
 }
 
 /*
- * @brief Erase a sector in memory
- */
-void logger_erase(logger_t *logger, uint16_t sector) {
-    // After every erase, the flash chip disables write, so must re-enable
-    w25q128jv_write_enable(&logger->flash);
-    delay(LOGGER_WRITE_EN_TIME);
-
-    w25q128jv_erase_sector(&logger->flash, sector);
-    delay(LOGGER_SECTOR_ERASE_TIME);
-
-    w25q128jv_write_enable(&logger->flash);
-    delay(LOGGER_WRITE_EN_TIME);
-}
-
-/*
  * @brief Read one page and get message structs
  *
  * This function is very slow but temporary and not used in main loop anyways
@@ -126,18 +111,4 @@ void logger_read_output(logger_t *logger) {
     }
 
     uart_write_buf(logger->debug_uart, "Finished\r\n", strlen("Finished\r\n"));
-}
-
-void logger_erase_output(logger_t *logger) {
-    for (uint16_t i = 0; i < LOGGER_NUM_SECTORS; i++) {
-        logger_erase(logger, i);
-
-        char uart_buf[100];
-        snprintf(uart_buf, sizeof(uart_buf), "Erased %d out of %d\r\n",
-            i + 1, LOGGER_NUM_SECTORS);
-        uart_write_buf(logger->debug_uart, uart_buf, strlen(uart_buf));
-    }
-
-    char uart_buf[100] = "Finished erase. Power cycle now.\r\n";
-    uart_write_buf(logger->debug_uart, uart_buf, strlen(uart_buf));
 }

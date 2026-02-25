@@ -41,9 +41,7 @@ typedef struct {
 
 void logger_init(logger_t *logger, spi_t *spi, uart_t *debug_uart);
 void logger_write(logger_t *logger, ins_t *ins);
-void logger_erase(logger_t *logger, uint16_t sector);
 void logger_read(logger_t *logger, uint32_t page, message_t *messages);
 void logger_read_output(logger_t *logger);
-void logger_erase_output(logger_t *logger);
 
 #endif // LOGGER_H
