@@ -21,7 +21,6 @@ void init(vehicle_t *vehicle) {
 void update_ground(vehicle_t *vehicle) {
     indicator_update_slow(&vehicle->indicator);
     ins_update(&vehicle->ins);
-    logger_update(&vehicle->logger, &vehicle->ins);
 
     if (vehicle->ins.accel[2] > 2) {
         vehicle->accel_thresh_counter++;
