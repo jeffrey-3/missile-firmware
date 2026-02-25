@@ -7,9 +7,6 @@
 #include "../../src/logger.h"
 #include "../../src/board.h"
 
-#define LOGGER_NUM_SECTORS 10
-#define LOGGER_NUM_PAGES 30
-
 static uint8_t data_buffer[LOGGER_RING_BUF_SIZE] = {0};
 
 void test_led_blink(void) {
@@ -71,7 +68,8 @@ void test_erase_flash(void) {
     w25q128jv_init(&flash, &spi);
 
     // Erase every sector one by one
-    for (uint16_t i = 0; i < LOGGER_NUM_SECTORS; i++) {
+    uint8_t num_sectors = 50; // Number of sectors you want to erase
+    for (uint16_t i = 0; i < num_sectors; i++) {
         while (w25q128jv_check_busy(&flash)) spin(1);
         w25q128jv_write_enable(&flash);
 
@@ -80,7 +78,7 @@ void test_erase_flash(void) {
 
         char uart_buf[100];
         snprintf(uart_buf, sizeof(uart_buf), "Erased %d out of %d\r\n",
-            i + 1, LOGGER_NUM_SECTORS);
+            i + 1, num_sectors);
         uart_write_buf(&uart, uart_buf, strlen(uart_buf));
     }
 
@@ -101,10 +99,11 @@ void test_read_flash(void) {
     w25q128jv_init(&flash, &spi);
 
     // Read each page one by one
-    for (uint32_t i = 0; i < LOGGER_NUM_PAGES; i++) {
+    uint8_t num_pages = 50; // How many pages you want to read
+    for (uint32_t i = 0; i < num_pages; i++) {
         char buf[100];
         snprintf(buf, sizeof(buf), "Reading page %ld out of %d\r\n", i + 1,
-            LOGGER_NUM_PAGES);
+            num_pages);
         uart_write_buf(&uart, buf, strlen(buf));
 
         // Read this page and get array of message structs
