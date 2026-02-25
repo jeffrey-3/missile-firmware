@@ -63,7 +63,6 @@ bool mat_mul(matrix_t *result, const matrix_t *a, const matrix_t *b) {
 
     for (uint8_t i = 0; i < result->rows; i++) {
         for (uint8_t j = 0; j < result->cols; j++) {
-
             float sum = 0.0f;
 
             for (uint8_t k = 0; k < a->cols; k++)
@@ -89,13 +88,3 @@ bool mat_transpose(matrix_t *result, const matrix_t *m) {
 
     return true;
 }
-
-// void mat_print(const matrix_t *m)
-// {
-//     for (uint8_t i = 0; i < m->rows; i++) {
-//         for (uint8_t j = 0; j < m->cols; j++)
-//             printf("%8.3f ", m->data[i][j]);
-//         printf("\n");
-//     }
-//     printf("\n");
-// }

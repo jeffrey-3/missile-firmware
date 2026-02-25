@@ -22,6 +22,4 @@ bool mat_sub(matrix_t *result, const matrix_t *a, const matrix_t *b);
 bool mat_mul(matrix_t *result, const matrix_t *a, const matrix_t *b);
 bool mat_transpose(matrix_t *result, const matrix_t *m);
 
-// void mat_print(const matrix_t *m);
-
 #endif // MATRIX_H
