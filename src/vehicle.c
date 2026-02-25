@@ -1,5 +1,29 @@
 #include "vehicle.h"
 
+static void update_ground(vehicle_t *vehicle) {
+    indicator_update_slow(&vehicle->indicator);
+    control_update(&vehicle->control, &vehicle->ins);
+    ins_update(&vehicle->ins);
+    logger_update(&vehicle->logger, &vehicle->ins);
+
+    if (vehicle->ins.accel[2] > 2) {
+        vehicle->accel_thresh_counter++;
+    } else {
+        vehicle->accel_thresh_counter = 0;
+    }
+
+    if (vehicle->accel_thresh_counter > 20) {
+        vehicle->state = STATE_FLIGHT;
+    }
+}
+
+static void update_flight(vehicle_t *vehicle) {
+    indicator_update_fast(&vehicle->indicator);
+    control_update(&vehicle->control, &vehicle->ins);
+    ins_update(&vehicle->ins);
+    logger_update(&vehicle->logger, &vehicle->ins);
+}
+
 void vehicle_init(vehicle_t *vehicle) {
     vehicle->state = STATE_GROUND;
     vehicle->accel_thresh_counter = 0;
@@ -19,25 +43,12 @@ void vehicle_init(vehicle_t *vehicle) {
 }
 
 void vehicle_update(vehicle_t *vehicle) {
-    indicator_update_slow(&vehicle->indicator);
-    control_update(&vehicle->control, &vehicle->ins);
-    ins_update(&vehicle->ins);
-    logger_update(&vehicle->logger, &vehicle->ins);
-
-    // Detect state transitions
     switch (vehicle->state) {
         case STATE_GROUND:
-            if (vehicle->ins.accel[2] > 10) {
-                vehicle->accel_thresh_counter++;
-            } else {
-                vehicle->accel_thresh_counter = 0;
-            }
-
-            if (vehicle->accel_thresh_counter > 20) {
-                vehicle->state = STATE_FLIGHT;
-            }
+            update_ground(vehicle);
             break;
         case STATE_FLIGHT:
+            update_flight(vehicle);
             break;
     }
 }
