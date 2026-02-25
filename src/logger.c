@@ -36,15 +36,15 @@ void logger_update(logger_t *logger, ins_t *ins) {
     if (!w25q128jv_check_busy(&logger->flash)) {
         if (w25q128jv_check_write_enabled(&logger->flash)) {
             // Check if buffer contains more than one page
-            if (ring_buffer_count(&logger->ring_buffer) > LOGGER_PAGE_SIZE) {
+            if (ring_buffer_count(&logger->ring_buffer) > W25Q128JV_PAGE_SIZE) {
                 // Get one page of bytes from ring buffer
-                uint8_t write_buf[LOGGER_PAGE_SIZE];
+                uint8_t write_buf[W25Q128JV_PAGE_SIZE];
                 ring_buffer_read_arr(&logger->ring_buffer, write_buf,
-                    LOGGER_PAGE_SIZE);
+                    W25Q128JV_PAGE_SIZE);
 
                 // Write one page
                 w25q128jv_write_page(&logger->flash, logger->current_page, 0,
-                    LOGGER_PAGE_SIZE, write_buf);
+                    W25Q128JV_PAGE_SIZE, write_buf);
                 logger->current_page++;
             }
         } else {

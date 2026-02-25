@@ -13,6 +13,9 @@
 #define W25Q128JV_PAGE_PROGRAM 0x02
 #define W25Q128JV_READ_STATUS_1 0x05
 
+#define W25Q128JV_PAGE_SIZE 256
+#define W25Q128JV_PAGES_PER_SECTOR 16
+
 typedef struct {
     spi_t *spi;
 } w25q128jv_t;

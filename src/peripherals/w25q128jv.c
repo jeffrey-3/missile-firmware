@@ -43,7 +43,7 @@ bool w25q128jv_check_write_enabled(w25q128jv_t *device) {
  */
 void w25q128jv_read(w25q128jv_t *device, uint32_t start_page, uint8_t offset,
     uint32_t size, uint8_t *data) {
-    uint32_t mem_addr = (start_page * 256) + offset;
+    uint32_t mem_addr = (start_page * W25Q128JV_PAGE_SIZE) + offset;
 
     uint8_t tx_buf[size + 4];
     uint8_t rx_buf[size + 4];
@@ -97,7 +97,8 @@ void w25q128jv_write_disable(w25q128jv_t *device) {
  */
 void w25q128jv_erase_sector(w25q128jv_t *device, uint16_t sector) {
     // Each sector has 16 pages of 256 bytes each
-    uint32_t mem_addr = sector * 16 * 256;
+    uint32_t mem_addr = sector * W25Q128JV_PAGES_PER_SECTOR *
+        W25Q128JV_PAGE_SIZE;
     uint8_t tx_buf[4] = {W25Q128JV_SECTOR_ERASE, (mem_addr >> 16) & 0xFF,
         (mem_addr >> 8) & 0xFF, mem_addr & 0xFF};
     uint8_t rx_buf[4];
@@ -120,7 +121,7 @@ void w25q128jv_erase_sector(w25q128jv_t *device, uint16_t sector) {
  */
 void w25q128jv_write_page(w25q128jv_t *device, uint32_t page, uint16_t offset,
     uint32_t size, uint8_t *data) {
-    uint32_t mem_addr = page * 256 + offset;
+    uint32_t mem_addr = page * W25Q128JV_PAGE_SIZE + offset;
 
     uint8_t tx_buf[size + 4];
     uint8_t rx_buf[size + 4];
