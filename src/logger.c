@@ -11,9 +11,7 @@ void logger_init(logger_t *logger, spi_t *spi) {
     ring_buffer_setup(&logger->ring_buffer, data_buffer, LOGGER_RING_BUF_SIZE);
 
     w25q128jv_init(&logger->flash, logger->flash_spi);
-
     w25q128jv_write_enable(&logger->flash);
-    delay(LOGGER_WRITE_EN_TIME);
 }
 
 /*
@@ -42,15 +40,14 @@ void logger_update(logger_t *logger, ins_t *ins) {
     ring_buffer_write_arr(&logger->ring_buffer, byte_array, sizeof(message));
 
     // Check if buffer is ready to flush (length of buffer more than one page)
-    uint32_t page_size = LOGGER_MSG_PER_PAGE * sizeof(message_t);
-    if (ring_buffer_count(&logger->ring_buffer) > page_size) {
+    if (ring_buffer_count(&logger->ring_buffer) > LOGGER_PAGE_SIZE) {
         // Get one page of bytes from ring buffer
-        uint8_t write_buf[page_size];
-        ring_buffer_read_arr(&logger->ring_buffer, write_buf, page_size);
+        uint8_t write_buf[LOGGER_PAGE_SIZE];
+        ring_buffer_read_arr(&logger->ring_buffer, write_buf, LOGGER_PAGE_SIZE);
 
         // Write the data
         w25q128jv_write_page(&logger->flash, logger->current_page, 0,
-            LOGGER_MSG_PER_PAGE * sizeof(message_t), write_buf);
+            LOGGER_PAGE_SIZE, write_buf);
         logger->current_page++;
     } else {
         // After every write, the flash chip disables write, so must re-enable

@@ -12,11 +12,9 @@
 #include "ins.h"
 
 #define LOGGER_RING_BUF_SIZE 1024 // Must be a power of 2
-#define LOGGER_MSG_PER_PAGE 5
-#define LOGGER_SECTOR_ERASE_TIME 450
-#define LOGGER_WRITE_EN_TIME 5
 #define LOGGER_NUM_SECTORS 10
 #define LOGGER_NUM_PAGES 30
+#define LOGGER_PAGE_SIZE 256
 
 typedef struct __attribute__((packed)) {
     uint32_t counter;
