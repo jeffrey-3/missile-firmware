@@ -15,13 +15,12 @@ SOURCES = src/startup.c \
           src/peripherals/w25q128jv.c \
           src/math/quaternion.c \
           src/math/math.c \
+          src/util/ring_buffer.c \
           src/board.c \
           src/ins.c \
           src/logger.c \
           src/control.c \
-          src/indicator.c \
-          src/vehicle.c \
-          src/util/ring_buffer.c
+          src/indicator.c
 
 all: firmware integration unit
 
