@@ -6,9 +6,11 @@
 #include "hal/spi.h"
 #include "peripherals/icm45686.h"
 #include "math/quaternion.h"
-#include "config.h"
 
 #define INS_ALIGN_SAMPLES 100
+#define GYRO_OFF_X 0.00795f
+#define GYRO_OFF_Y -0.00295f
+#define GYRO_OFF_Z 0.0002f
 
 typedef enum {
     INS_STATE_ALIGN,

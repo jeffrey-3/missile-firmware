@@ -1,7 +1,7 @@
 #ifndef PWM_H
 #define PWM_H
 
-#include "../config.h"
+#include "clock.h"
 #include "gpio.h"
 #include "registers.h"
 

@@ -1,8 +1,6 @@
 #ifndef VEHICLE_H
 #define VEHICLE_H
 
-#include "math/math.h"
-#include "math/quaternion.h"
 #include "hal/clock.h"
 #include "hal/pwm.h"
 #include "hal/uart.h"

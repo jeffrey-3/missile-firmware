@@ -4,7 +4,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "registers.h"
-#include "../config.h"
+
+#define FREQ 16000000 // 16 MHz
 
 void systick_init();
 void _systick_handler();
