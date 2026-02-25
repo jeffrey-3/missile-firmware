@@ -14,12 +14,6 @@ void logger_init(logger_t *logger, spi_t *spi) {
     w25q128jv_write_enable(&logger->flash);
 }
 
-/*
- * @brief Write buffer to memory
- *
- * Write may take some time to complete at the hardware level, so do not call
- * again before the last write is complete
- */
 void logger_update(logger_t *logger, ins_t *ins) {
     if (!timer_expired(&logger->timer, 10)) return;
 
@@ -58,5 +52,4 @@ void logger_update(logger_t *logger, ins_t *ins) {
             w25q128jv_write_enable(&logger->flash);
         }
     }
-
 }
