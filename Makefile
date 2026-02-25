@@ -15,6 +15,7 @@ SOURCES = src/startup.c \
           src/peripherals/w25q128jv.c \
           src/math/quaternion.c \
           src/math/math.c \
+          src/math/matrix.c \
           src/util/ring_buffer.c \
           src/board.c \
           src/ins.c \
