@@ -15,6 +15,7 @@
 
 #define W25Q128JV_PAGE_SIZE 256
 #define W25Q128JV_PAGES_PER_SECTOR 16
+#define W25Q128JV_NUM_SECTORS 4096
 
 typedef struct {
     spi_t *spi;

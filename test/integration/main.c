@@ -68,8 +68,7 @@ void test_erase_flash(void) {
     w25q128jv_init(&flash, &spi);
 
     // Erase every sector one by one
-    uint8_t num_sectors = 50; // Number of sectors you want to erase
-    for (uint16_t i = 0; i < num_sectors; i++) {
+    for (uint16_t i = 0; i < W25Q128JV_NUM_SECTORS; i++) {
         while (w25q128jv_check_busy(&flash)) spin(1);
         w25q128jv_write_enable(&flash);
 
@@ -78,7 +77,7 @@ void test_erase_flash(void) {
 
         char uart_buf[100];
         snprintf(uart_buf, sizeof(uart_buf), "Erased %d out of %d\r\n",
-            i + 1, num_sectors);
+            i + 1, W25Q128JV_NUM_SECTORS);
         uart_write_buf(&uart, uart_buf, strlen(uart_buf));
     }
 
@@ -99,10 +98,10 @@ void test_read_flash(void) {
     w25q128jv_init(&flash, &spi);
 
     // Read each page one by one
-    uint8_t num_pages = 50; // How many pages you want to read
+    uint32_t num_pages = W25Q128JV_PAGES_PER_SECTOR * W25Q128JV_NUM_SECTORS;
     for (uint32_t i = 0; i < num_pages; i++) {
         char buf[100];
-        snprintf(buf, sizeof(buf), "Reading page %ld out of %d\r\n", i + 1,
+        snprintf(buf, sizeof(buf), "Reading page %ld out of %ld\r\n", i + 1,
             num_pages);
         uart_write_buf(&uart, buf, strlen(buf));
 
