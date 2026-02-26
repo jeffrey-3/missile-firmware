@@ -41,7 +41,8 @@ SOURCES_SIM = src/startup.c \
               src/indicator.c \
               src/vehicle.c \
               test/sim/icm45686_sim.c \
-              test/sim/pwm_sim.c
+              test/sim/pwm_sim.c \
+              test/sim/sim_interface.c
 
 all: firmware integration unit sim
 
