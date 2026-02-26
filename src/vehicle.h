@@ -30,7 +30,5 @@ typedef struct {
 
 void vehicle_init(vehicle_t *vehicle);
 void vehicle_update(vehicle_t *vehicle);
-void vehicle_update_ground(vehicle_t *vehicle);
-void vehicle_update_flight(vehicle_t *vehicle);
 
 #endif // VEHICLE_H

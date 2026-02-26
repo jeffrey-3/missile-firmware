@@ -1,5 +1,27 @@
 #include "vehicle.h"
 
+static void vehicle_update_ground(vehicle_t *vehicle) {
+    indicator_update_slow(&vehicle->indicator);
+    ins_update(&vehicle->ins);
+
+    if (vehicle->ins.accel[2] > 2) {
+        vehicle->accel_thresh_counter++;
+    } else {
+        vehicle->accel_thresh_counter = 0;
+    }
+
+    if (vehicle->accel_thresh_counter > 20) {
+        vehicle->state = STATE_FLIGHT;
+    }
+}
+
+static void vehicle_update_flight(vehicle_t *vehicle) {
+    indicator_update_fast(&vehicle->indicator);
+    control_update(&vehicle->control, &vehicle->ins);
+    ins_update(&vehicle->ins);
+    logger_update(&vehicle->logger, &vehicle->ins);
+}
+
 void vehicle_init(vehicle_t *vehicle) {
     vehicle->state = STATE_GROUND;
     vehicle->accel_thresh_counter = 0;
@@ -27,26 +49,4 @@ void vehicle_update(vehicle_t *vehicle) {
             vehicle_update_flight(vehicle);
             break;
     }
-}
-
-void vehicle_update_ground(vehicle_t *vehicle) {
-    indicator_update_slow(&vehicle->indicator);
-    ins_update(&vehicle->ins);
-
-    if (vehicle->ins.accel[2] > 2) {
-        vehicle->accel_thresh_counter++;
-    } else {
-        vehicle->accel_thresh_counter = 0;
-    }
-
-    if (vehicle->accel_thresh_counter > 20) {
-        vehicle->state = STATE_FLIGHT;
-    }
-}
-
-void vehicle_update_flight(vehicle_t *vehicle) {
-    indicator_update_fast(&vehicle->indicator);
-    control_update(&vehicle->control, &vehicle->ins);
-    ins_update(&vehicle->ins);
-    logger_update(&vehicle->logger, &vehicle->ins);
 }
