@@ -23,8 +23,27 @@ SOURCES = src/startup.c \
           src/control.c \
           src/indicator.c \
           src/vehicle.c
+SOURCES_SIM = src/startup.c \
+              src/syscalls.c \
+              src/hal/clock.c \
+              src/hal/gpio.c \
+              src/hal/uart.c \
+              src/hal/spi.c \
+              src/peripherals/w25q128jv.c \
+              src/math/quaternion.c \
+              src/math/math.c \
+              src/math/matrix.c \
+              src/util/ring_buffer.c \
+              src/board.c \
+              src/ins.c \
+              src/logger.c \
+              src/control.c \
+              src/indicator.c \
+              src/vehicle.c \
+              test/sim/icm45686_sim.c \
+              test/sim/pwm_sim.c
 
-all: firmware integration unit
+all: firmware integration unit sim
 
 firmware: $(SOURCES) src/main.c
 	mkdir -p build/$@
@@ -37,6 +56,11 @@ integration: $(SOURCES) test/integration/main.c
 	arm-none-eabi-objcopy -O binary build/$@/$@.elf build/$@/$@.bin
 
 unit: $(SOURCES) test/unit/main.c
+	mkdir -p build/$@
+	arm-none-eabi-gcc $^ $(CFLAGS) $(LDFLAGS) -Wl,-Map=build/$@/$@.map -o build/$@/$@.elf
+	arm-none-eabi-objcopy -O binary build/$@/$@.elf build/$@/$@.bin
+
+sim: $(SOURCES_SIM) test/sim/main.c
 	mkdir -p build/$@
 	arm-none-eabi-gcc $^ $(CFLAGS) $(LDFLAGS) -Wl,-Map=build/$@/$@.map -o build/$@/$@.elf
 	arm-none-eabi-objcopy -O binary build/$@/$@.elf build/$@/$@.bin
