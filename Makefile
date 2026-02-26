@@ -21,7 +21,8 @@ SOURCES = src/startup.c \
           src/ins.c \
           src/logger.c \
           src/control.c \
-          src/indicator.c
+          src/indicator.c \
+          src/vehicle.c
 
 all: firmware integration unit
 

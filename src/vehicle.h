@@ -28,4 +28,8 @@ typedef struct {
     uint16_t accel_thresh_counter;
 } vehicle_t;
 
+void vehicle_init(vehicle_t *vehicle);
+void vehicle_update_ground(vehicle_t *vehicle);
+void vehicle_update_flight(vehicle_t *vehicle);
+
 #endif // VEHICLE_H
