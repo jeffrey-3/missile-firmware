@@ -5,14 +5,7 @@ int main(void) {
     vehicle_init(&vehicle);
 
     for (;;) {
-        switch (vehicle.state) {
-            case STATE_GROUND:
-                vehicle_update_ground(&vehicle);
-                break;
-            case STATE_FLIGHT:
-                vehicle_update_flight(&vehicle);
-                break;
-        }
+        vehicle_update(&vehicle);
     }
 
     return 0;

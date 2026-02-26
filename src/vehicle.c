@@ -18,6 +18,17 @@ void vehicle_init(vehicle_t *vehicle) {
     control_init(&vehicle->control, &vehicle->servo_y, &vehicle->servo_z);
 }
 
+void vehicle_update(vehicle_t *vehicle) {
+    switch (vehicle->state) {
+        case STATE_GROUND:
+            vehicle_update_ground(vehicle);
+            break;
+        case STATE_FLIGHT:
+            vehicle_update_flight(vehicle);
+            break;
+    }
+}
+
 void vehicle_update_ground(vehicle_t *vehicle) {
     indicator_update_slow(&vehicle->indicator);
     ins_update(&vehicle->ins);
