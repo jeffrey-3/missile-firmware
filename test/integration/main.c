@@ -5,34 +5,34 @@
 #include "../../src/hal/uart.h"
 #include "../../src/hal/spi.h"
 #include "../../src/logger.h"
-#include "../../src/board.h"
+#include "../../src/pins.h"
 
 static uint8_t data_buffer[LOGGER_RING_BUF_SIZE] = {0};
 
 void test_led_blink(void) {
-    gpio_init(&board_pins.led);
+    gpio_init(&pins.led);
 
     bool led_on = false;
 
     for (;;) {
-        gpio_write(&board_pins.led, led_on);
+        gpio_write(&pins.led, led_on);
         led_on = !led_on;
         delay(200);
     }
 }
 
 void test_servo(void) {
-    gpio_init(&board_pins.led);
+    gpio_init(&pins.led);
 
     pwm_t servo_y;
     pwm_t servo_z;
-    pwm_init(&servo_y, TIM3, &board_pins.tim3_ch2, 2, 333.0f);
-    pwm_init(&servo_z, TIM1, &board_pins.tim1_ch4, 4, 333.0f);
+    pwm_init(&servo_y, TIM3, &pins.tim3_ch2, 2, 333.0f);
+    pwm_init(&servo_z, TIM1, &pins.tim1_ch4, 4, 333.0f);
 
     bool led_on = false;
 
     for (;;) {
-        gpio_write(&board_pins.led, led_on);
+        gpio_write(&pins.led, led_on);
         led_on = !led_on;
 
         if (led_on) {
@@ -62,9 +62,9 @@ void test_erase_flash(void) {
     uart_t uart;
     w25q128jv_t flash;
 
-    uart_init(&uart, UART1, &board_pins.uart1_tx, &board_pins.uart1_rx, 115200);
-    spi_init(&spi, SPI2, &board_pins.spi2_cs, &board_pins.spi2_miso,
-        &board_pins.spi2_mosi, &board_pins.spi2_sck);
+    uart_init(&uart, UART1, &pins.uart1_tx, &pins.uart1_rx, 115200);
+    spi_init(&spi, SPI2, &pins.spi2_cs, &pins.spi2_miso, &pins.spi2_mosi,
+        &pins.spi2_sck);
     w25q128jv_init(&flash, &spi);
 
     // Erase every sector one by one
@@ -92,9 +92,9 @@ void test_read_flash(void) {
     ring_buffer_t ring_buffer;
 
     ring_buffer_setup(&ring_buffer, data_buffer, LOGGER_RING_BUF_SIZE);
-    uart_init(&uart, UART1, &board_pins.uart1_tx, &board_pins.uart1_rx, 115200);
-    spi_init(&spi, SPI2, &board_pins.spi2_cs, &board_pins.spi2_miso,
-        &board_pins.spi2_mosi, &board_pins.spi2_sck);
+    uart_init(&uart, UART1, &pins.uart1_tx, &pins.uart1_rx, 115200);
+    spi_init(&spi, SPI2, &pins.spi2_cs, &pins.spi2_miso, &pins.spi2_mosi,
+        &pins.spi2_sck);
     w25q128jv_init(&flash, &spi);
 
     // Read each page one by one
@@ -156,7 +156,7 @@ int main(void) {
     systick_init();
 
     uart_t uart;
-    uart_init(&uart, UART1, &board_pins.uart1_tx, &board_pins.uart1_rx, 115200);
+    uart_init(&uart, UART1, &pins.uart1_tx, &pins.uart1_rx, 115200);
 
     // Print menu
     for (uint8_t i = 0; i < num_tests; i++) {

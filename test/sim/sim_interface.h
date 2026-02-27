@@ -2,7 +2,7 @@
 #define SIM_INTERFACE_H
 
 #include "../../src/hal/uart.h"
-#include "../../src/board.h"
+#include "../../src/pins.h"
 
 typedef struct __attribute__((packed)) {
     uint32_t time;

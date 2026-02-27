@@ -8,7 +8,7 @@
 #include "logger.h"
 #include "control.h"
 #include "indicator.h"
-#include "board.h"
+#include "pins.h"
 
 typedef enum {
     STATE_GROUND,

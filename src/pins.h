@@ -18,8 +18,8 @@ typedef struct {
     gpio_t spi2_miso;
     gpio_t spi2_mosi;
     gpio_t spi2_sck;
-} board_pins_t;
+} pins_t;
 
-extern board_pins_t board_pins;
+extern pins_t pins;
 
 #endif // BOARD_H

@@ -1,6 +1,6 @@
-#include "board.h"
+#include "pins.h"
 
-board_pins_t board_pins = {
+pins_t pins = {
     .led = {
         .gpio_reg = GPIOB,
         .pin = 9,
