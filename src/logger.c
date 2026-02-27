@@ -14,18 +14,18 @@ void logger_init(logger_t *logger, spi_t *spi) {
     w25q128jv_write_enable(&logger->flash);
 }
 
-void logger_update(logger_t *logger, ins_t *ins) {
+void logger_update(logger_t *logger, estimator_t *estimator) {
     if (!timer_expired(&logger->timer, 10)) return;
 
     message_t message = {
         .counter = logger->counter++,
         .time = get_time(),
-        .gx = ins->gyro[0],
-        .gy = ins->gyro[1],
-        .gz = ins->gyro[2],
-        .ax = ins->accel[0],
-        .ay = ins->accel[1],
-        .az = ins->accel[2]
+        .gx = estimator->gyro[0],
+        .gy = estimator->gyro[1],
+        .gz = estimator->gyro[2],
+        .ax = estimator->accel[0],
+        .ay = estimator->accel[1],
+        .az = estimator->accel[2]
     };
 
     // Add message to buffer

@@ -9,7 +9,7 @@ void control_init(control_t *control, pwm_t *servo_y, pwm_t *servo_z) {
     control->control_timer = 0;
 }
 
-void control_update(control_t *control, ins_t *ins) {
+void control_update(control_t *control, estimator_t *estimator) {
     if (!timer_expired(&control->control_timer, 20)) return;
 
     // TODO: Get estimated LOS angle from estimator to generate angle setpoints
@@ -18,7 +18,7 @@ void control_update(control_t *control, ins_t *ins) {
     float pitch_setpoint = 0 * DEG2RAD;
     float yaw_setpoint = 0 * DEG2RAD;
 
-    quat_to_euler(ins->q, &control->roll, &control->pitch, &control->yaw);
+    quat_to_euler(estimator->q, &control->roll, &control->pitch, &control->yaw);
 
     float pitch_error = pitch_setpoint - control->pitch;
     float yaw_error = yaw_setpoint - control->yaw;

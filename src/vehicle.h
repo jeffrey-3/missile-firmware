@@ -4,7 +4,7 @@
 #include "hal/clock.h"
 #include "hal/pwm.h"
 #include "hal/uart.h"
-#include "ins.h"
+#include "estimator.h"
 #include "logger.h"
 #include "control.h"
 #include "indicator.h"
@@ -16,7 +16,7 @@ typedef enum {
 } state_t;
 
 typedef struct {
-    ins_t ins;
+    estimator_t estimator;
     logger_t logger;
     control_t control;
     indicator_t indicator;

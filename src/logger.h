@@ -6,10 +6,9 @@
 #include <string.h>
 #include "hal/clock.h"
 #include "hal/uart.h"
-#include "hal/spi.h"
 #include "peripherals/w25q128jv.h"
 #include "util/ring_buffer.h"
-#include "ins.h"
+#include "estimator.h"
 
 #define LOGGER_RING_BUF_SIZE 1024 // Must be a power of 2
 
@@ -34,6 +33,6 @@ typedef struct {
 } logger_t;
 
 void logger_init(logger_t *logger, spi_t *spi);
-void logger_update(logger_t *logger, ins_t *ins);
+void logger_update(logger_t *logger, estimator_t *estimator);
 
 #endif // LOGGER_H

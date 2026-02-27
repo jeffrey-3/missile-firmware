@@ -3,7 +3,7 @@
 
 #include "hal/clock.h"
 #include "hal/pwm.h"
-#include "ins.h"
+#include "estimator.h"
 
 typedef struct {
     pwm_t *servo_y;
@@ -18,6 +18,6 @@ typedef struct {
 } control_t;
 
 void control_init(control_t *control, pwm_t *servo_y, pwm_t *servo_z);
-void control_update(control_t *control, ins_t *ins);
+void control_update(control_t *control, estimator_t *estimator);
 
 #endif // CONTROL_H

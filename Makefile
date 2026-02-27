@@ -18,7 +18,7 @@ SOURCES = src/startup.c \
           src/math/matrix.c \
           src/util/ring_buffer.c \
           src/board.c \
-          src/ins.c \
+          src/estimator.c \
           src/logger.c \
           src/control.c \
           src/indicator.c \
@@ -35,7 +35,7 @@ SOURCES_SIM = src/startup.c \
               src/math/matrix.c \
               src/util/ring_buffer.c \
               src/board.c \
-              src/ins.c \
+              src/estimator.c \
               src/logger.c \
               src/control.c \
               src/indicator.c \

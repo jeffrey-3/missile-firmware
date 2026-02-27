@@ -2,9 +2,9 @@
 
 static void vehicle_update_ground(vehicle_t *vehicle) {
     indicator_update_slow(&vehicle->indicator);
-    ins_update(&vehicle->ins);
+    estimator_update(&vehicle->estimator);
 
-    if (vehicle->ins.accel[2] > 2) {
+    if (vehicle->estimator.accel[2] > 2) {
         vehicle->accel_thresh_counter++;
     } else {
         vehicle->accel_thresh_counter = 0;
@@ -17,9 +17,9 @@ static void vehicle_update_ground(vehicle_t *vehicle) {
 
 static void vehicle_update_flight(vehicle_t *vehicle) {
     indicator_update_fast(&vehicle->indicator);
-    control_update(&vehicle->control, &vehicle->ins);
-    ins_update(&vehicle->ins);
-    logger_update(&vehicle->logger, &vehicle->ins);
+    control_update(&vehicle->control, &vehicle->estimator);
+    estimator_update(&vehicle->estimator);
+    logger_update(&vehicle->logger, &vehicle->estimator);
 }
 
 void vehicle_init(vehicle_t *vehicle) {
@@ -35,7 +35,7 @@ void vehicle_init(vehicle_t *vehicle) {
         &board_pins.spi2_miso, &board_pins.spi2_mosi, &board_pins.spi2_sck);
 
     indicator_init(&vehicle->indicator, &board_pins.led);
-    ins_init(&vehicle->ins, &vehicle->imu_spi);
+    estimator_init(&vehicle->estimator, &vehicle->imu_spi);
     logger_init(&vehicle->logger, &vehicle->flash_spi);
     control_init(&vehicle->control, &vehicle->servo_y, &vehicle->servo_z);
 }
