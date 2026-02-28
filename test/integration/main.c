@@ -71,9 +71,9 @@ void test_calibrate(void) {
             icm45686_read_accel(&imu, accel);
             icm45686_read_gyro(&imu, gyro);
 
-            char uart_buf[100];
+            char uart_buf[200];
             snprintf(uart_buf, sizeof(uart_buf),
-                "%.2f,%.2f,%.2f\r\n",
+                "%f,%f,%f\r\n",
                 (double)accel[0], (double)accel[1], (double)accel[2]);
             uart_write_buf(&uart, uart_buf, strlen(uart_buf));
         }
