@@ -4,6 +4,7 @@
 #include "../../src/hal/clock.h"
 #include "../../src/hal/uart.h"
 #include "../../src/hal/spi.h"
+#include "../../src/peripherals/icm45686.h"
 #include "../../src/logger.h"
 #include "../../src/pins.h"
 
@@ -54,7 +55,29 @@ void test_servo(void) {
 }
 
 void test_calibrate(void) {
-    return;
+    uart_t uart;
+    spi_t spi;
+    icm45686_t imu;
+    uint32_t timer;
+
+    uart_init(&uart, UART1, &pins.uart1_tx, &pins.uart1_rx, 115200);
+    spi_init(&spi, SPI1, &pins.spi1_cs, &pins.spi1_miso, &pins.spi1_mosi,
+        &pins.spi1_sck);
+    icm45686_init(&imu, &spi);
+
+    for (;;) {
+        if (timer_expired(&timer, 20)) {
+            float accel[3], gyro[3];
+            icm45686_read_accel(&imu, accel);
+            icm45686_read_gyro(&imu, gyro);
+
+            char uart_buf[100];
+            snprintf(uart_buf, sizeof(uart_buf),
+                "%.2f,%.2f,%.2f\r\n",
+                (double)accel[0], (double)accel[1], (double)accel[2]);
+            uart_write_buf(&uart, uart_buf, strlen(uart_buf));
+        }
+    }
 }
 
 void test_erase_flash(void) {
