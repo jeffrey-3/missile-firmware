@@ -33,7 +33,7 @@ void uart_write_buf(uart_t *uart, char *buf, size_t len) {
 }
 
 int uart_read_ready(uart_t *uart) {
-    return uart->uart_reg->ISR & (1UL << 5); // If RXNE bit is set, data is ready
+    return uart->uart_reg->ISR & (1UL << 5); // Check if RXNE bit is set
 }
 
 uint8_t uart_read_byte(uart_t *uart) {
