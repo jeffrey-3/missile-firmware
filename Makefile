@@ -75,6 +75,9 @@ debug-integration:
 debug-unit:
 	gdb-multiarch build/unit/unit.elf
 
+debug-sim:
+	gdb-multiarch build/sim/sim.elf
+
 flash-firmware:
 	st-flash --reset write build/firmware/firmware.bin 0x8000000
 
