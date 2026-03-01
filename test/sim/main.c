@@ -3,12 +3,14 @@
 
 int main(void) {
     vehicle_t vehicle;
-    vehicle_init(&vehicle);
+    sim_interface_t sim;
 
-    sim_interface_init();
+    vehicle_init(&vehicle);
+    sim_interface_init(&sim);
 
     for (;;) {
         vehicle_update(&vehicle);
+        sim_interface_update(&sim);
     }
 
     return 0;
