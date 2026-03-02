@@ -9,7 +9,7 @@ int main(void) {
     sim_interface_init(&sim);
 
     for (;;) {
-        vehicle_update(&vehicle);
+        // vehicle_update(&vehicle);
         sim_interface_update(&sim);
     }
 
