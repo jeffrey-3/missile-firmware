@@ -38,6 +38,19 @@ struct systick_reg {
     volatile uint32_t CALIB;
 };
 
+struct nvic_reg {
+    volatile uint32_t ISER;
+    volatile uint32_t RESERVED0[31];
+    volatile uint32_t ICER;
+    volatile uint32_t RESERVED1[31];
+    volatile uint32_t ISPR;
+    volatile uint32_t RESERVED2[31];
+    volatile uint32_t ICPR;
+    volatile uint32_t RESERVED3[31];
+    volatile uint32_t RESERVED4[64];
+    volatile uint32_t IP[8];
+};
+
 struct gpio_reg {
     volatile uint32_t MODER;
     volatile uint32_t OTYPER;
@@ -110,6 +123,7 @@ struct spi_reg {
 
 #define RCC ((struct rcc_reg *) 0x40021000)
 #define SYSTICK ((struct systick_reg *) 0xE000E010)
+#define NVIC ((struct nvic_reg *) 0xE000E100)
 #define GPIOA ((struct gpio_reg *) 0x50000000)
 #define GPIOB ((struct gpio_reg *) 0x50000400)
 #define GPIOC ((struct gpio_reg *) 0x50000800)

@@ -12,8 +12,11 @@ void sim_interface_init(sim_interface_t *sim) {
 void sim_interface_update(sim_interface_t *sim) {
     char c = 0;
 
-    while (uart_read_ready(&sim->uart)) {
-        c = (char)uart_read_byte(&sim->uart);
+    while (!uart_ring_buffer_empty()) {
+        uint8_t b;
+        uart_ring_buffer_read(&b);
+        c = (char)b;
+
         sim->buffer[sim->buffer_index] = c;
         sim->buffer_index++;
     }

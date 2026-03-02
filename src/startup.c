@@ -18,12 +18,11 @@ __attribute__((naked, noreturn)) void _reset(void) {
     for (;;) (void) 0; // Infinite loop in the case if main() returns
 }
 
-extern void _systick_handler(void); // Defined in hal
+extern void _systick_handler(void);
+extern void _uart1_irq_handler(void);
 extern void _estack(void); // Defined in linker
 
 __attribute__((section(".vectors"))) void (*const tab[16 + 32])(void) = {
-    _estack,
-    _reset,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    _systick_handler
-};
+    _estack, _reset, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, _systick_handler, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, _uart1_irq_handler};
