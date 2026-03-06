@@ -8,8 +8,6 @@
 #include "../../src/logger.h"
 #include "../../src/pins.h"
 
-static uint8_t data_buffer[LOGGER_RING_BUF_SIZE] = {0};
-
 void test_led_blink(void) {
     gpio_init(&pins.led);
 
@@ -75,7 +73,7 @@ void test_calibrate(void) {
             snprintf(uart_buf, sizeof(uart_buf),
                 "%f,%f,%f\r\n",
                 (double)accel[0], (double)accel[1], (double)accel[2]);
-            uart_write_buf(&uart, uart_buf, strlen(uart_buf));
+            uart_write(&uart, uart_buf, strlen(uart_buf));
         }
     }
 }
@@ -101,11 +99,11 @@ void test_erase_flash(void) {
         char uart_buf[100];
         snprintf(uart_buf, sizeof(uart_buf), "Erased %d out of %d\r\n",
             i + 1, W25Q128JV_NUM_SECTORS);
-        uart_write_buf(&uart, uart_buf, strlen(uart_buf));
+        uart_write(&uart, uart_buf, strlen(uart_buf));
     }
 
     char uart_buf[100] = "Finished\r\n";
-    uart_write_buf(&uart, uart_buf, strlen(uart_buf));
+    uart_write(&uart, uart_buf, strlen(uart_buf));
 }
 
 void test_read_flash(void) {
@@ -114,7 +112,7 @@ void test_read_flash(void) {
     w25q128jv_t flash;
     ring_buffer_t ring_buffer;
 
-    ring_buffer_setup(&ring_buffer, data_buffer, LOGGER_RING_BUF_SIZE);
+    ring_buffer_setup(&ring_buffer);
     uart_init(&uart, UART1, &pins.uart1_tx, &pins.uart1_rx, 115200);
     spi_init(&spi, SPI2, &pins.spi2_cs, &pins.spi2_miso, &pins.spi2_mosi,
         &pins.spi2_sck);
@@ -126,7 +124,7 @@ void test_read_flash(void) {
         char buf[100];
         snprintf(buf, sizeof(buf), "Reading page %ld out of %ld\r\n", i + 1,
             num_pages);
-        uart_write_buf(&uart, buf, strlen(buf));
+        uart_write(&uart, buf, strlen(buf));
 
         // Read this page and get array of message structs
         while (w25q128jv_check_busy(&flash)) spin(1);
@@ -152,11 +150,11 @@ void test_read_flash(void) {
                 message.counter, message.time, (double)message.gx,
                 (double)message.gy, (double)message.gz, (double)message.ax,
                 (double)message.ay, (double)message.az);
-            uart_write_buf(&uart, uart_buf, strlen(uart_buf));
+            uart_write(&uart, uart_buf, strlen(uart_buf));
         }
     }
 
-    uart_write_buf(&uart, "Finished\r\n", strlen("Finished\r\n"));
+    uart_write(&uart, "Finished\r\n", strlen("Finished\r\n"));
 }
 
 typedef struct {
@@ -186,18 +184,21 @@ int main(void) {
         char uart_buf[200];
         snprintf(uart_buf, sizeof(uart_buf), "%c - %s\r\n", test_entries[i].key,
             test_entries[i].name);
-        uart_write_buf(&uart, uart_buf, strlen(uart_buf));
+        uart_write(&uart, uart_buf, strlen(uart_buf));
     }
 
     // Store first character as key
-    while (!uart_read_ready(&uart));
+    while (uart_empty(&uart));
 
-    char key = uart_read_byte(&uart);
+    uint8_t b;
+    uart_read(&uart, &b);
+    char key = (char)b;
 
     // Check if second character is ending
-    while (!uart_read_ready(&uart));
+    while (uart_empty(&uart));
 
-    char end = uart_read_byte(&uart);
+    uart_read(&uart, &b);
+    char end = (char)b;
 
     if (end == '\n' || end == '\r') {
         // Check if key is found in test entries

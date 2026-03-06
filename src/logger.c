@@ -1,14 +1,12 @@
 #include "logger.h"
 
-static uint8_t data_buffer[LOGGER_RING_BUF_SIZE] = {0};
-
 void logger_init(logger_t *logger, spi_t *spi) {
     logger->flash_spi = spi;
     logger->current_page = 0;
     logger->counter = 0;
     logger->timer = 0;
 
-    ring_buffer_setup(&logger->ring_buffer, data_buffer, LOGGER_RING_BUF_SIZE);
+    ring_buffer_setup(&logger->ring_buffer);
 
     w25q128jv_init(&logger->flash, logger->flash_spi);
     w25q128jv_write_enable(&logger->flash);

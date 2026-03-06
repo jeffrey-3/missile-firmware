@@ -4,14 +4,16 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define RING_BUFFER_SIZE 1024 // Must be power of 2
+
 typedef struct ring_buffer_t {
-    uint8_t* buffer;
+    uint8_t buffer[RING_BUFFER_SIZE];
     uint32_t mask;
     uint32_t read_index;
     uint32_t write_index;
 } ring_buffer_t;
 
-void ring_buffer_setup(ring_buffer_t* rb, uint8_t* buffer, uint32_t size);
+void ring_buffer_setup(ring_buffer_t* rb);
 bool ring_buffer_empty(ring_buffer_t* rb);
 bool ring_buffer_write(ring_buffer_t* rb, uint8_t byte);
 void ring_buffer_write_arr(ring_buffer_t* rb, uint8_t *arr, uint32_t size);

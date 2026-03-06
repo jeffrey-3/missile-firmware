@@ -12,9 +12,9 @@ void sim_interface_init(sim_interface_t *sim) {
 void sim_interface_update(sim_interface_t *sim) {
     char c = 0;
 
-    while (!uart_ring_buffer_empty()) {
+    while (!uart_empty(&sim->uart)) {
         uint8_t b;
-        uart_ring_buffer_read(&b);
+        uart_read(&sim->uart, &b);
         c = (char)b;
 
         sim->buffer[sim->buffer_index] = c;
@@ -44,6 +44,6 @@ void sim_interface_update(sim_interface_t *sim) {
         char uart_buf[100];
         snprintf(uart_buf, sizeof(uart_buf), "%d, %d\r\n",
             sim_transmit.servo_y, sim_transmit.servo_z);
-        uart_write_buf(&sim->uart, uart_buf, strlen(uart_buf));
+        uart_write(&sim->uart, uart_buf, strlen(uart_buf));
     }
 }

@@ -10,8 +10,6 @@
 #include "util/ring_buffer.h"
 #include "estimator.h"
 
-#define LOGGER_RING_BUF_SIZE 1024 // Must be a power of 2
-
 typedef struct __attribute__((packed)) {
     uint32_t counter;
     uint32_t time;

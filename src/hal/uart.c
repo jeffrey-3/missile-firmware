@@ -1,7 +1,6 @@
 #include "uart.h"
 
-static ring_buffer_t ring_buffer;
-static uint8_t data_buffer[UART_RING_BUF_SIZE] = {0};
+static ring_buffer_t uart1_ring_buffer;
 
 void uart_init(uart_t *uart, struct uart_reg *uart_reg, gpio_t *tx, gpio_t *rx,
     unsigned long baud) {
@@ -24,41 +23,33 @@ void uart_init(uart_t *uart, struct uart_reg *uart_reg, gpio_t *tx, gpio_t *rx,
 
     uart->uart_reg->CR1 |= (1 << 5); // Enable interrupt
 
-    ring_buffer_setup(&ring_buffer, data_buffer, UART_RING_BUF_SIZE);
+    ring_buffer_setup(&uart1_ring_buffer);
 }
 
-void uart_write_byte(uart_t *uart, uint8_t byte) {
-    uart->uart_reg->TDR = byte;
-
-    // Finished transmit when TXE is set
-    while ((uart->uart_reg->ISR & (1UL << 7)) == 0) spin(1);
-}
-
-void uart_write_buf(uart_t *uart, char *buf, size_t len) {
+void uart_write(uart_t *uart, char *buf, size_t len) {
     while (len-- > 0) {
-        uart_write_byte(uart, *(uint8_t *)buf++);
+        uart->uart_reg->TDR = *(uint8_t *)buf++;
+
+        // Wait until transmit complete (TXE bit set) before sending next
+        while ((uart->uart_reg->ISR & (1UL << 7)) == 0) spin(1);
     }
 }
 
-int uart_read_ready(uart_t *uart) {
-    return uart->uart_reg->ISR & (1UL << 5); // Check if RXNE bit is set
+void uart_read(uart_t *uart, uint8_t* byte) {
+    if (uart->uart_reg == UART1) {
+        ring_buffer_read(&uart1_ring_buffer, byte);
+    }
 }
 
-uint8_t uart_read_byte(uart_t *uart) {
-    return (uint8_t)(uart->uart_reg->RDR & 255);
-}
+bool uart_empty(uart_t *uart) {
+    if (uart->uart_reg == UART1) {
+        return ring_buffer_empty(&uart1_ring_buffer);
+    }
 
-bool uart_ring_buffer_empty() {
-    return ring_buffer_empty(&ring_buffer);
-}
-
-void uart_ring_buffer_read(uint8_t* byte) {
-    ring_buffer_read(&ring_buffer, byte);
+    return true;
 }
 
 void _uart1_irq_handler() {
-    uart_t uart1;
-    uart1.uart_reg = UART1;
-    uint8_t b = uart_read_byte(&uart1);
-    ring_buffer_write(&ring_buffer, b);
+    uint8_t rx_byte = (uint8_t)(UART1->RDR & 255);
+    ring_buffer_write(&uart1_ring_buffer, rx_byte);
 }

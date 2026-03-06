@@ -1,10 +1,9 @@
 #include "ring_buffer.h"
 
-void ring_buffer_setup(ring_buffer_t* rb, uint8_t* buffer, uint32_t size) {
-    rb->buffer = buffer;
+void ring_buffer_setup(ring_buffer_t* rb) {
     rb->read_index = 0;
     rb->write_index = 0;
-    rb->mask = size - 1;
+    rb->mask = RING_BUFFER_SIZE - 1;
 }
 
 bool ring_buffer_empty(ring_buffer_t* rb) {
