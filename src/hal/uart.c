@@ -38,19 +38,21 @@ void uart_write(uart_t *uart, char *buf, size_t len) {
 
 void uart_read(uart_t *uart, uint8_t* byte) {
     if (uart->uart_reg == UART1) {
-        ring_buffer_read(&uart1_ring_buffer, byte);
+        uint8_t data[1];
+        ring_buffer_read(&uart1_ring_buffer, data, 1);
+        *byte = data[0];
     }
 }
 
 bool uart_empty(uart_t *uart) {
     if (uart->uart_reg == UART1) {
-        return ring_buffer_empty(&uart1_ring_buffer);
+        return ring_buffer_count(&uart1_ring_buffer) == 0;
     }
 
     return true;
 }
 
 void _uart1_irq_handler() {
-    uint8_t rx_byte = (uint8_t)(UART1->RDR & 255);
-    ring_buffer_write(&uart1_ring_buffer, rx_byte);
+    uint8_t rx_byte[1] = {(uint8_t)(UART1->RDR & 255)};
+    ring_buffer_write(&uart1_ring_buffer, rx_byte, 1);
 }

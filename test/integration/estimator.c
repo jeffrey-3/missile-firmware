@@ -26,8 +26,8 @@ void test_estimator() {
             yaw *= RAD2DEG;
 
             char uart_buf[200];
-            snprintf(uart_buf, sizeof(uart_buf), "%.1f %.1f %.1f %d\r\n", (double)roll,
-                (double)pitch, (double)yaw, estimator.launched);
+            snprintf(uart_buf, sizeof(uart_buf), "%.1f %.1f %.1f %d\r\n",
+                (double)roll, (double)pitch, (double)yaw, estimator.launched);
             uart_write(&uart, uart_buf, strlen(uart_buf));
         }
 

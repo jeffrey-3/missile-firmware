@@ -59,12 +59,11 @@ void test_read_flash(void) {
         uint8_t data[W25Q128JV_PAGE_SIZE];
         while (w25q128jv_check_busy(&flash)) spin(1);
         w25q128jv_read(&flash, i, 0, W25Q128JV_PAGE_SIZE, data);
-        ring_buffer_write_arr(&ring_buffer, data, W25Q128JV_PAGE_SIZE);
+        ring_buffer_write(&ring_buffer, data, W25Q128JV_PAGE_SIZE);
 
         while (ring_buffer_count(&ring_buffer) > sizeof(message_t)) {
             uint8_t message_bytes[sizeof(message_t)];
-            ring_buffer_read_arr(&ring_buffer, message_bytes,
-                sizeof(message_t));
+            ring_buffer_read(&ring_buffer, message_bytes, sizeof(message_t));
 
             message_t message;
             memcpy(&message, message_bytes, sizeof(message_t));

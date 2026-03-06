@@ -29,7 +29,7 @@ void logger_update(logger_t *logger, estimator_t *estimator) {
     // Add message to buffer
     uint8_t byte_array[sizeof(message)];
     memcpy(&byte_array, &message, sizeof(message));
-    ring_buffer_write_arr(&logger->ring_buffer, byte_array, sizeof(message));
+    ring_buffer_write(&logger->ring_buffer, byte_array, sizeof(message));
 
     if (!w25q128jv_check_busy(&logger->flash)) {
         if (w25q128jv_check_write_enabled(&logger->flash)) {
@@ -37,7 +37,7 @@ void logger_update(logger_t *logger, estimator_t *estimator) {
             if (ring_buffer_count(&logger->ring_buffer) > W25Q128JV_PAGE_SIZE) {
                 // Get one page of bytes from ring buffer
                 uint8_t write_buf[W25Q128JV_PAGE_SIZE];
-                ring_buffer_read_arr(&logger->ring_buffer, write_buf,
+                ring_buffer_read(&logger->ring_buffer, write_buf,
                     W25Q128JV_PAGE_SIZE);
 
                 // Write one page
