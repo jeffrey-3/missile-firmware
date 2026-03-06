@@ -23,6 +23,10 @@ SOURCES = src/startup.c \
           src/control.c \
           src/indicator.c \
           src/vehicle.c
+SOURCES_INTEGRATION = test/integration/led.c \
+                      test/integration/servo.c \
+                      test/integration/calibrate.c \
+                      test/integration/flash.c
 SOURCES_SIM = src/startup.c \
               src/syscalls.c \
               src/hal/clock.c \
@@ -51,7 +55,7 @@ firmware: $(SOURCES) src/main.c
 	arm-none-eabi-gcc $^ $(CFLAGS) $(LDFLAGS) -Wl,-Map=build/$@/$@.map -o build/$@/$@.elf
 	arm-none-eabi-objcopy -O binary build/$@/$@.elf build/$@/$@.bin
 
-integration: $(SOURCES) test/integration/main.c
+integration: $(SOURCES_INTEGRATION) $(SOURCES) test/integration/main.c
 	mkdir -p build/$@
 	arm-none-eabi-gcc $^ $(CFLAGS) $(LDFLAGS) -Wl,-Map=build/$@/$@.map -o build/$@/$@.elf
 	arm-none-eabi-objcopy -O binary build/$@/$@.elf build/$@/$@.bin

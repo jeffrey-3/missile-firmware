@@ -19,9 +19,10 @@ void uart_init(uart_t *uart, struct uart_reg *uart_reg, gpio_t *tx, gpio_t *rx,
 
     uart->uart_reg->CR1 = 0; // Disable this UART
     uart->uart_reg->BRR = FREQ / uart->baud; // FREQ is a UART bus frequency
-    uart->uart_reg->CR1 |= 1UL | (1UL << 2) | (1UL << 3); // Set UE, RE, TE
-
-    uart->uart_reg->CR1 |= (1 << 5); // Enable interrupt
+    uart->uart_reg->CR1 |= 1UL; // Set UE
+    uart->uart_reg->CR1 |= 1UL << 2; // Set RE
+    uart->uart_reg->CR1 |= 1UL << 3; // Set TE
+    uart->uart_reg->CR1 |= 1UL << 5; // Enable interrupt
 
     ring_buffer_setup(&uart1_ring_buffer);
 }

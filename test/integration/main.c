@@ -1,161 +1,15 @@
 #include <string.h>
 #include <stdio.h>
-#include "../../src/hal/pwm.h"
 #include "../../src/hal/clock.h"
 #include "../../src/hal/uart.h"
 #include "../../src/hal/spi.h"
-#include "../../src/peripherals/icm45686.h"
-#include "../../src/logger.h"
 #include "../../src/pins.h"
 
-void test_led_blink(void) {
-    gpio_init(&pins.led);
-
-    bool led_on = false;
-
-    for (;;) {
-        gpio_write(&pins.led, led_on);
-        led_on = !led_on;
-        delay(200);
-    }
-}
-
-void test_servo(void) {
-    gpio_init(&pins.led);
-
-    pwm_t servo_y;
-    pwm_t servo_z;
-    pwm_init(&servo_y, TIM3, &pins.tim3_ch2, 2, 333.0f);
-    pwm_init(&servo_z, TIM1, &pins.tim1_ch4, 4, 333.0f);
-
-    bool led_on = false;
-
-    for (;;) {
-        gpio_write(&pins.led, led_on);
-        led_on = !led_on;
-
-        if (led_on) {
-            pwm_set_pulse(&servo_y, 2100);
-            delay(200);
-            pwm_set_pulse(&servo_y, 900);
-            delay(200);
-            pwm_set_pulse(&servo_y, 1500);
-            delay(200);
-        } else {
-            pwm_set_pulse(&servo_z, 2100);
-            delay(200);
-            pwm_set_pulse(&servo_z, 900);
-            delay(200);
-            pwm_set_pulse(&servo_z, 1500);
-            delay(200);
-        }
-    }
-}
-
-void test_calibrate(void) {
-    uart_t uart;
-    spi_t spi;
-    icm45686_t imu;
-    uint32_t timer;
-
-    uart_init(&uart, UART1, &pins.uart1_tx, &pins.uart1_rx, 115200);
-    spi_init(&spi, SPI1, &pins.spi1_cs, &pins.spi1_miso, &pins.spi1_mosi,
-        &pins.spi1_sck);
-    icm45686_init(&imu, &spi);
-
-    for (;;) {
-        if (timer_expired(&timer, 20)) {
-            float accel[3], gyro[3];
-            icm45686_read_accel(&imu, accel);
-            icm45686_read_gyro(&imu, gyro);
-
-            char uart_buf[200];
-            snprintf(uart_buf, sizeof(uart_buf),
-                "%f,%f,%f\r\n",
-                (double)accel[0], (double)accel[1], (double)accel[2]);
-            uart_write(&uart, uart_buf, strlen(uart_buf));
-        }
-    }
-}
-
-void test_erase_flash(void) {
-    spi_t spi;
-    uart_t uart;
-    w25q128jv_t flash;
-
-    uart_init(&uart, UART1, &pins.uart1_tx, &pins.uart1_rx, 115200);
-    spi_init(&spi, SPI2, &pins.spi2_cs, &pins.spi2_miso, &pins.spi2_mosi,
-        &pins.spi2_sck);
-    w25q128jv_init(&flash, &spi);
-
-    // Erase every sector one by one
-    for (uint16_t i = 0; i < W25Q128JV_NUM_SECTORS; i++) {
-        while (w25q128jv_check_busy(&flash)) spin(1);
-        w25q128jv_write_enable(&flash);
-
-        while (w25q128jv_check_busy(&flash)) spin(1);
-        w25q128jv_erase_sector(&flash, i);
-
-        char uart_buf[100];
-        snprintf(uart_buf, sizeof(uart_buf), "Erased %d out of %d\r\n",
-            i + 1, W25Q128JV_NUM_SECTORS);
-        uart_write(&uart, uart_buf, strlen(uart_buf));
-    }
-
-    char uart_buf[100] = "Finished\r\n";
-    uart_write(&uart, uart_buf, strlen(uart_buf));
-}
-
-void test_read_flash(void) {
-    spi_t spi;
-    uart_t uart;
-    w25q128jv_t flash;
-    ring_buffer_t ring_buffer;
-
-    ring_buffer_setup(&ring_buffer);
-    uart_init(&uart, UART1, &pins.uart1_tx, &pins.uart1_rx, 115200);
-    spi_init(&spi, SPI2, &pins.spi2_cs, &pins.spi2_miso, &pins.spi2_mosi,
-        &pins.spi2_sck);
-    w25q128jv_init(&flash, &spi);
-
-    // Read each page one by one
-    uint32_t num_pages = W25Q128JV_PAGES_PER_SECTOR * W25Q128JV_NUM_SECTORS;
-    for (uint32_t i = 0; i < num_pages; i++) {
-        char buf[100];
-        snprintf(buf, sizeof(buf), "Reading page %ld out of %ld\r\n", i + 1,
-            num_pages);
-        uart_write(&uart, buf, strlen(buf));
-
-        // Read this page and get array of message structs
-        while (w25q128jv_check_busy(&flash)) spin(1);
-        w25q128jv_write_disable(&flash);
-
-        uint8_t data[W25Q128JV_PAGE_SIZE];
-        while (w25q128jv_check_busy(&flash)) spin(1);
-        w25q128jv_read(&flash, i, 0, W25Q128JV_PAGE_SIZE, data);
-        ring_buffer_write_arr(&ring_buffer, data, W25Q128JV_PAGE_SIZE);
-
-        while (ring_buffer_count(&ring_buffer) > sizeof(message_t)) {
-            uint8_t message_bytes[sizeof(message_t)];
-            ring_buffer_read_arr(&ring_buffer, message_bytes,
-                sizeof(message_t));
-
-            message_t message;
-            memcpy(&message, message_bytes, sizeof(message_t));
-
-            // Print contents of message
-            char uart_buf[100];
-            snprintf(uart_buf, sizeof(uart_buf),
-                "%ld,%ld,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\r\n",
-                message.counter, message.time, (double)message.gx,
-                (double)message.gy, (double)message.gz, (double)message.ax,
-                (double)message.ay, (double)message.az);
-            uart_write(&uart, uart_buf, strlen(uart_buf));
-        }
-    }
-
-    uart_write(&uart, "Finished\r\n", strlen("Finished\r\n"));
-}
+void test_led_blink();
+void test_servo();
+void test_calibrate();
+void test_erase_flash();
+void test_read_flash();
 
 typedef struct {
     char key;
@@ -187,18 +41,17 @@ int main(void) {
         uart_write(&uart, uart_buf, strlen(uart_buf));
     }
 
+    uint8_t rx_byte;
+
     // Store first character as key
     while (uart_empty(&uart));
-
-    uint8_t b;
-    uart_read(&uart, &b);
-    char key = (char)b;
+    uart_read(&uart, &rx_byte);
+    char key = (char)rx_byte;
 
     // Check if second character is ending
     while (uart_empty(&uart));
-
-    uart_read(&uart, &b);
-    char end = (char)b;
+    uart_read(&uart, &rx_byte);
+    char end = (char)rx_byte;
 
     if (end == '\n' || end == '\r') {
         // Check if key is found in test entries

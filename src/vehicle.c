@@ -23,8 +23,7 @@ static void vehicle_update_flight(vehicle_t *vehicle) {
 }
 
 void vehicle_init(vehicle_t *vehicle) {
-    // vehicle->state = STATE_GROUND;
-    vehicle->state = STATE_FLIGHT; // Just for sim testing
+    vehicle->state = STATE_GROUND;
     vehicle->accel_thresh_counter = 0;
 
     systick_init();
