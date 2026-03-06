@@ -27,8 +27,10 @@ typedef struct {
     vec3_t acc_world;
     vec3_t acc_sum;
     uint16_t acc_count;
+    uint16_t accel_thresh_counter;
     float accel[3];
     float gyro[3];
+    bool launched;
     uint32_t timer;
 } estimator_t;
 

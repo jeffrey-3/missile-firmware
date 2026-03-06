@@ -4,13 +4,7 @@ static void vehicle_update_ground(vehicle_t *vehicle) {
     indicator_update_slow(&vehicle->indicator);
     estimator_update(&vehicle->estimator);
 
-    if (vehicle->estimator.accel[2] > 2) {
-        vehicle->accel_thresh_counter++;
-    } else {
-        vehicle->accel_thresh_counter = 0;
-    }
-
-    if (vehicle->accel_thresh_counter > 20) {
+    if (vehicle->estimator.launched) {
         vehicle->state = STATE_FLIGHT;
     }
 }
@@ -24,7 +18,6 @@ static void vehicle_update_flight(vehicle_t *vehicle) {
 
 void vehicle_init(vehicle_t *vehicle) {
     vehicle->state = STATE_GROUND;
-    vehicle->accel_thresh_counter = 0;
 
     systick_init();
     pwm_init(&vehicle->servo_y, TIM1, &pins.tim1_ch4, 4, 333.0f);

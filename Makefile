@@ -26,7 +26,8 @@ SOURCES = src/startup.c \
 SOURCES_INTEGRATION = test/integration/led.c \
                       test/integration/servo.c \
                       test/integration/calibrate.c \
-                      test/integration/flash.c
+                      test/integration/flash.c \
+                      test/integration/estimator.c
 SOURCES_SIM = src/startup.c \
               src/syscalls.c \
               src/hal/clock.c \

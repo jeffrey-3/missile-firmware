@@ -8,8 +8,10 @@
 void test_led_blink();
 void test_servo();
 void test_calibrate();
+void test_estimator();
 void test_erase_flash();
 void test_read_flash();
+void test_estimator();
 
 typedef struct {
     char key;
@@ -21,6 +23,7 @@ static const test_entry_t test_entries[] = {
     {'1', "Blink LED", test_led_blink},
     {'2', "Servo Test", test_servo},
     {'3', "Calibrate IMU", test_calibrate},
+    {'4', "Test estimator", test_estimator},
     {'*', "Erase Flash", test_erase_flash},
     {'#', "Read Flash", test_read_flash}
 };

@@ -12,7 +12,10 @@ void estimator_init(estimator_t *estimator, spi_t *imu_spi) {
     estimator->acc_sum.x = 0.0f;
     estimator->acc_sum.y = 0.0f;
     estimator->acc_sum.z = 0.0f;
+    estimator->acc_count = 0;
+    estimator->accel_thresh_counter = 0;
     estimator->timer = 0;
+    estimator->launched = false;
     estimator->state = ESTIMATOR_STATE_ALIGN;
 
     icm45686_init(&estimator->imu, estimator->imu_spi);
@@ -29,6 +32,17 @@ void estimator_update(estimator_t *estimator) {
     estimator->gyro[0] -= GYRO_OFF_X;
     estimator->gyro[1] -= GYRO_OFF_Y;
     estimator->gyro[2] -= GYRO_OFF_Z;
+
+    // Launch detection
+    if (estimator->accel[2] > 1.5f) {
+        estimator->accel_thresh_counter++;
+    } else {
+        estimator->accel_thresh_counter = 0;
+    }
+
+    if (estimator->accel_thresh_counter > 5) {
+        estimator->launched = true;
+    }
 
     switch (estimator->state) {
         case ESTIMATOR_STATE_ALIGN:
