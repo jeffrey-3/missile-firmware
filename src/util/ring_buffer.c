@@ -31,7 +31,7 @@ uint32_t rb_read_u8(rb_u8_t* rb, uint8_t* data, uint32_t len) {
     return count;
 }
 
-uint32_t rb_read_f32(rb_f32_t* rb, uint8_t* data, uint32_t len) {
+uint32_t rb_read_f32(rb_f32_t* rb, float* data, uint32_t len) {
     uint32_t count = 0;
 
     while (count < len) {

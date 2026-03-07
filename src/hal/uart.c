@@ -1,6 +1,6 @@
 #include "uart.h"
 
-static ring_buffer_t uart1_ring_buffer;
+static rb_u8_t uart1_ring_buffer;
 
 void uart_init(uart_t *uart, struct uart_reg *uart_reg, gpio_t *tx, gpio_t *rx,
     unsigned long baud) {
@@ -24,7 +24,7 @@ void uart_init(uart_t *uart, struct uart_reg *uart_reg, gpio_t *tx, gpio_t *rx,
     uart->uart_reg->CR1 |= 1UL << 3; // Set TE
     uart->uart_reg->CR1 |= 1UL << 5; // Enable interrupt
 
-    ring_buffer_setup(&uart1_ring_buffer);
+    rb_setup_u8(&uart1_ring_buffer);
 }
 
 void uart_write(uart_t *uart, char *buf, size_t len) {
@@ -39,14 +39,14 @@ void uart_write(uart_t *uart, char *buf, size_t len) {
 void uart_read(uart_t *uart, uint8_t* byte) {
     if (uart->uart_reg == UART1) {
         uint8_t data[1];
-        ring_buffer_read(&uart1_ring_buffer, data, 1);
+        rb_read_u8(&uart1_ring_buffer, data, 1);
         *byte = data[0];
     }
 }
 
 bool uart_empty(uart_t *uart) {
     if (uart->uart_reg == UART1) {
-        return ring_buffer_count(&uart1_ring_buffer) == 0;
+        return rb_count_u8(&uart1_ring_buffer) == 0;
     }
 
     return true;
@@ -54,5 +54,5 @@ bool uart_empty(uart_t *uart) {
 
 void _uart1_irq_handler() {
     uint8_t rx_byte[1] = {(uint8_t)(UART1->RDR & 255)};
-    ring_buffer_write(&uart1_ring_buffer, rx_byte, 1);
+    rb_write_u8(&uart1_ring_buffer, rx_byte, 1);
 }

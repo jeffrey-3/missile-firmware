@@ -36,9 +36,9 @@ void test_read_flash(void) {
     spi_t spi;
     uart_t uart;
     w25q128jv_t flash;
-    ring_buffer_t ring_buffer;
+    rb_u8_t ring_buffer;
 
-    ring_buffer_setup(&ring_buffer);
+    rb_setup_u8(&ring_buffer);
     uart_init(&uart, UART1, &pins.uart1_tx, &pins.uart1_rx, 115200);
     spi_init(&spi, SPI2, &pins.spi2_cs, &pins.spi2_miso, &pins.spi2_mosi,
         &pins.spi2_sck);
@@ -59,11 +59,11 @@ void test_read_flash(void) {
         uint8_t data[W25Q128JV_PAGE_SIZE];
         while (w25q128jv_check_busy(&flash)) spin(1);
         w25q128jv_read(&flash, i, 0, W25Q128JV_PAGE_SIZE, data);
-        ring_buffer_write(&ring_buffer, data, W25Q128JV_PAGE_SIZE);
+        rb_write_u8(&ring_buffer, data, W25Q128JV_PAGE_SIZE);
 
-        while (ring_buffer_count(&ring_buffer) > sizeof(message_t)) {
+        while (rb_count_u8(&ring_buffer) > sizeof(message_t)) {
             uint8_t message_bytes[sizeof(message_t)];
-            ring_buffer_read(&ring_buffer, message_bytes, sizeof(message_t));
+            rb_read_u8(&ring_buffer, message_bytes, sizeof(message_t));
 
             message_t message;
             memcpy(&message, message_bytes, sizeof(message_t));
