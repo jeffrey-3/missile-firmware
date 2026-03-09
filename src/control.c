@@ -5,7 +5,7 @@ void control_init(control_t *control, pwm_t *servo_y, pwm_t *servo_z) {
     control->servo_z = servo_z;
     control->max_pulse = 2100;
     control->min_pulse = 900;
-    control->p_gain = 0.5f;
+    control->p_gain = 0.01f;
     control->control_timer = 0;
 }
 

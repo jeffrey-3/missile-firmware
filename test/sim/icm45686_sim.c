@@ -29,10 +29,8 @@ void icm45686_read_gyro(icm45686_t *device, float *data) {
 
     // Send time and controls to simulator
     char buf[200];
-    snprintf(buf, sizeof(buf), "%ld,%d,%d,%d,%.1f %.1f %.5f %d\r\n", get_time(),
-        ESTIMATOR_DT, sim_transmit.servo_y, sim_transmit.servo_z,
-        (double)roll, (double)pitch, (double)sim_receive.gyro[0],
-        vehicle.estimator.launched);
+    snprintf(buf, sizeof(buf), "%ld,%d,%d,%d\r\n", get_time(),
+        ESTIMATOR_DT, sim_transmit.servo_y, sim_transmit.servo_z);
     uart_write(&sim.uart, buf, strlen(buf));
 
     // Read data from simulator
