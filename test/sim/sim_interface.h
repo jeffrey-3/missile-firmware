@@ -4,8 +4,11 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "../../src/vehicle.h"
 #include "../../src/hal/uart.h"
 #include "../../src/pins.h"
+
+extern vehicle_t vehicle;
 
 typedef struct {
     float gyro[3];
@@ -22,11 +25,10 @@ extern sim_transmit_t sim_transmit;
 
 typedef struct {
     uart_t uart;
-    char buffer[200];
-    uint8_t buffer_index;
 } sim_interface_t;
 
-void sim_interface_init(sim_interface_t *sim);
-void sim_interface_update(sim_interface_t *sim);
+extern sim_interface_t sim;
+
+void sim_interface_init(sim_interface_t *s);
 
 #endif // SIM_INTERFACE_H

@@ -5,7 +5,7 @@ void control_init(control_t *control, pwm_t *servo_y, pwm_t *servo_z) {
     control->servo_z = servo_z;
     control->max_pulse = 2100;
     control->min_pulse = 900;
-    control->p_gain = 0.2f;
+    control->p_gain = 0.5f;
     control->control_timer = 0;
 }
 
@@ -15,7 +15,7 @@ void control_update(control_t *control, estimator_t *estimator) {
     // TODO: Get estimated LOS angle from estimator to generate angle setpoints
     // Check flag to see if seeker available, otherwise keep last setpoint
 
-    float pitch_setpoint = 60 * DEG2RAD;
+    float pitch_setpoint = 40 * DEG2RAD;
     float yaw_setpoint = 0 * DEG2RAD;
 
     quat_to_euler(estimator->q, &control->roll, &control->pitch, &control->yaw);

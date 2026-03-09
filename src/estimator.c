@@ -9,9 +9,6 @@ void estimator_init(estimator_t *estimator, spi_t *imu_spi) {
     estimator->pos.x = 0.0f;
     estimator->pos.y = 0.0f;
     estimator->pos.z = 0.0f;
-    estimator->acc_sum.x = 0.0f;
-    estimator->acc_sum.y = 0.0f;
-    estimator->acc_sum.z = 0.0f;
     estimator->acc_count = 0;
     estimator->accel_thresh_counter = 0;
     estimator->timer = 0;
@@ -22,9 +19,9 @@ void estimator_init(estimator_t *estimator, spi_t *imu_spi) {
 }
 
 void estimator_update(estimator_t *estimator) {
-    if (!timer_expired(&estimator->timer, 10)) return;
+    if (!timer_expired(&estimator->timer, ESTIMATOR_DT)) return;
 
-    float dt = 0.01f;
+    float dt = (float)(ESTIMATOR_DT) / 1000.0f;
 
     icm45686_read_accel(&estimator->imu, estimator->accel);
     icm45686_read_gyro(&estimator->imu, estimator->gyro);
@@ -34,13 +31,13 @@ void estimator_update(estimator_t *estimator) {
     estimator->gyro[2] -= GYRO_OFF_Z;
 
     // Launch detection
-    if (estimator->accel[2] > 1.5f) {
+    if (fabs(estimator->accel[0]) > 1.1) {
         estimator->accel_thresh_counter++;
     } else {
         estimator->accel_thresh_counter = 0;
     }
 
-    if (estimator->accel_thresh_counter > 5) {
+    if (estimator->accel_thresh_counter > 1) {
         estimator->launched = true;
     }
 
@@ -56,20 +53,17 @@ void estimator_update(estimator_t *estimator) {
 }
 
 void estimator_align_update(estimator_t *estimator) {
-    estimator->acc_sum.x += estimator->accel[0];
-    estimator->acc_sum.y += estimator->accel[1];
-    estimator->acc_sum.z += estimator->accel[2];
+    float ax = estimator->accel[0];
+    float ay = estimator->accel[1];
+    float az = estimator->accel[2];
     estimator->acc_count++;
 
+    float roll = atan2f(-ay, -az);
+    float pitch = atan2f(ax, sqrtf(ay * ay + az *az));
+
+    estimator->q = quat_from_euler(roll, pitch, 0.0f);
+
     if (estimator->acc_count > ESTIMATOR_ALIGN_SAMPLES) {
-        float ax_avg = estimator->acc_sum.x / (float)estimator->acc_count;
-        float ay_avg = estimator->acc_sum.y / (float)estimator->acc_count;
-        float az_avg = estimator->acc_sum.z / (float)estimator->acc_count;
-
-        float roll = atan2f(-ay_avg, -az_avg);
-        float pitch = atan2f(ax_avg, sqrtf(ay_avg*ay_avg + az_avg*az_avg));
-
-        estimator->q = quat_from_euler(roll, pitch, 0.0f);
         estimator->state = ESTIMATOR_STATE_RUNNING;
     }
 }

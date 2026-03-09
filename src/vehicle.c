@@ -11,8 +11,8 @@ static void vehicle_update_ground(vehicle_t *vehicle) {
 
 static void vehicle_update_flight(vehicle_t *vehicle) {
     indicator_update_fast(&vehicle->indicator);
-    control_update(&vehicle->control, &vehicle->estimator);
     estimator_update(&vehicle->estimator);
+    control_update(&vehicle->control, &vehicle->estimator);
     logger_update(&vehicle->logger, &vehicle->estimator);
 }
 

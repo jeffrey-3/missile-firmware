@@ -7,10 +7,11 @@
 #include "peripherals/icm45686.h"
 #include "math/quaternion.h"
 
-#define ESTIMATOR_ALIGN_SAMPLES 100
-#define GYRO_OFF_X 0.00795f
-#define GYRO_OFF_Y -0.00295f
-#define GYRO_OFF_Z 0.0002f
+#define ESTIMATOR_DT 10 // Milliseconds
+#define ESTIMATOR_ALIGN_SAMPLES 10
+#define GYRO_OFF_X 0.00f
+#define GYRO_OFF_Y -0.0f
+#define GYRO_OFF_Z 0.000f
 
 typedef enum {
     ESTIMATOR_STATE_ALIGN,
@@ -25,7 +26,6 @@ typedef struct {
     vec3_t pos;
     vec3_t vel;
     vec3_t acc_world;
-    vec3_t acc_sum;
     uint16_t acc_count;
     uint16_t accel_thresh_counter;
     float accel[3];
