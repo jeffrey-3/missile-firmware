@@ -16,7 +16,7 @@ void control_update(control_t *control, estimator_t *estimator) {
     // Check flag to see if seeker available, otherwise keep last setpoint
 
     float pitch_setpoint = 40 * DEG2RAD;
-    float yaw_setpoint = 0 * DEG2RAD;
+    float yaw_setpoint = 10 * DEG2RAD;
 
     quat_to_euler(estimator->q, &control->roll, &control->pitch, &control->yaw);
 
