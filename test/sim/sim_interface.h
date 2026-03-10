@@ -13,6 +13,8 @@ extern vehicle_t vehicle;
 typedef struct {
     float gyro[3];
     float accel[3];
+    float pitch_error;
+    float yaw_error;
 } sim_receive_t;
 
 typedef struct {

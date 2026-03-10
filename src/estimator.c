@@ -16,6 +16,7 @@ void estimator_init(estimator_t *estimator, spi_t *imu_spi) {
     estimator->state = ESTIMATOR_STATE_ALIGN;
 
     icm45686_init(&estimator->imu, estimator->imu_spi);
+    seeker_init(&estimator->seeker);
 }
 
 void estimator_update(estimator_t *estimator) {
@@ -29,6 +30,10 @@ void estimator_update(estimator_t *estimator) {
     estimator->gyro[0] -= GYRO_OFF_X;
     estimator->gyro[1] -= GYRO_OFF_Y;
     estimator->gyro[2] -= GYRO_OFF_Z;
+
+    seeker_update(&estimator->seeker);
+    estimator->pitch_error = estimator->seeker.pitch_error;
+    estimator->yaw_error = estimator->seeker.yaw_error;
 
     // Launch detection
     if (fabs(estimator->accel[0]) > 1.1) {

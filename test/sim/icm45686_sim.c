@@ -61,6 +61,8 @@ void icm45686_read_gyro(icm45686_t *device, float *data) {
     sim_receive.accel[0] = values[3];
     sim_receive.accel[1] = values[4];
     sim_receive.accel[2] = values[5];
+    sim_receive.pitch_error = values[6];
+    sim_receive.yaw_error = values[7];
 
     data[0] = sim_receive.gyro[0];
     data[1] = sim_receive.gyro[1];

@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include "hal/spi.h"
 #include "peripherals/icm45686.h"
+#include "seeker.h"
 #include "math/quaternion.h"
 
 #define ESTIMATOR_DT 10 // Milliseconds
@@ -21,6 +22,7 @@ typedef enum {
 typedef struct {
     spi_t *imu_spi;
     icm45686_t imu;
+    seeker_t seeker;
     estimator_state_t state;
     quat_t q;
     vec3_t pos;
@@ -30,6 +32,8 @@ typedef struct {
     uint16_t accel_thresh_counter;
     float accel[3];
     float gyro[3];
+    float pitch_error;
+    float yaw_error;
     bool launched;
     uint32_t timer;
 } estimator_t;
