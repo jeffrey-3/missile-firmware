@@ -22,6 +22,7 @@ SOURCES = src/startup.c \
           src/logger.c \
           src/control.c \
           src/indicator.c \
+          src/seeker.c \
           src/vehicle.c
 SOURCES_INTEGRATION = test/integration/led.c \
                       test/integration/servo.c \
@@ -47,6 +48,7 @@ SOURCES_SIM = src/startup.c \
               src/vehicle.c \
               test/sim/icm45686_sim.c \
               test/sim/pwm_sim.c \
+              test/sim/seeker_sim.c \
               test/sim/sim_interface.c
 
 all: firmware integration unit sim
